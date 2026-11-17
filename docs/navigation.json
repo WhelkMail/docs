@@ -1,0 +1,44 @@
+[
+  { "title": "Introduction", "path": "/" },
+  {
+    "title": "Getting started",
+    "collapsible": true,
+    "children": [
+      { "title": "Quick start", "path": "/getting-started/" },
+      { "title": "Deployment", "path": "/deployment/" },
+      { "title": "Configuration", "path": "/configuration/" },
+      { "title": "OAuth setup", "path": "/oauth/" }
+    ]
+  },
+  {
+    "title": "Internals",
+    "collapsible": true,
+    "children": [
+      { "title": "Architecture", "path": "/architecture/" },
+      { "title": "Mail flows", "path": "/mail-flows/" },
+      { "title": "Data model", "path": "/data-model/" },
+      { "title": "Security", "path": "/security/" },
+      { "title": "Relay accounts", "path": "/relay-accounts/" }
+    ]
+  },
+  {
+    "title": "Features",
+    "collapsible": true,
+    "children": [
+      { "title": "Labels and filters", "path": "/labels-filters/" },
+      { "title": "PWA and Web Push", "path": "/pwa-push/" },
+      { "title": "Forwarding and cleanup", "path": "/forwarding-cleanup/" }
+    ]
+  },
+  {
+    "title": "Project",
+    "collapsible": true,
+    "children": [
+      { "title": "Development", "path": "/development/" },
+      { "title": "Upgrading", "path": "/upgrading/" },
+      { "title": "Troubleshooting", "path": "/troubleshooting/" },
+      { "title": "Known limitations", "path": "/limitations/" },
+      { "title": "License", "path": "/license/" }
+    ]
+  }
+]

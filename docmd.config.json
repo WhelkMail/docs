@@ -1,0 +1,90 @@
+{
+  "title": "WhelkMail Docs",
+  "url": "https://docs.whelkmail.eu",
+  "src": "docs",
+  "out": "site",
+  "logo": {
+    "light": "assets/images/logo.svg",
+    "dark": "assets/images/logo-dark.svg",
+    "alt": "WhelkMail logo",
+    "height": "32px"
+  },
+  "favicon": "assets/images/favicon.svg",
+  "layout": {
+    "spa": true,
+    "breadcrumbs": true,
+    "header": {
+      "enabled": true
+    },
+    "sidebar": {
+      "enabled": true,
+      "collapsible": true,
+      "defaultCollapsed": false,
+      "position": "left"
+    },
+    "optionsMenu": {
+      "position": "header",
+      "components": {
+        "search": true,
+        "themeSwitch": true
+      }
+    },
+    "footer": {
+      "style": "complete",
+      "copyright": "Copyright © 2026 WhelkMail · MIT License",
+      "branding": true,
+      "description": "Self-hosted, Cloudflare-native webmail for the IMAP and SMTP accounts you already own.",
+      "columns": [
+        {
+          "title": "Documentation",
+          "links": [
+            { "text": "Introduction", "url": "/" },
+            { "text": "Getting started", "url": "/getting-started/" },
+            { "text": "Deployment", "url": "/deployment/" },
+            { "text": "Configuration", "url": "/configuration/" },
+            { "text": "Troubleshooting", "url": "/troubleshooting/" }
+          ]
+        },
+        {
+          "title": "Internals",
+          "links": [
+            { "text": "Architecture", "url": "/architecture/" },
+            { "text": "Mail flows", "url": "/mail-flows/" },
+            { "text": "Data model", "url": "/data-model/" },
+            { "text": "Security", "url": "/security/" },
+            { "text": "Development", "url": "/development/" }
+          ]
+        },
+        {
+          "title": "Project",
+          "links": [
+            { "text": "Website", "url": "https://whelkmail.eu", "external": true },
+            { "text": "GitHub", "url": "https://github.com/WhelkMail/WhelkMail", "external": true },
+            { "text": "Releases", "url": "https://github.com/WhelkMail/WhelkMail/releases", "external": true },
+            { "text": "License", "url": "https://github.com/WhelkMail/WhelkMail/blob/main/LICENSE", "external": true }
+          ]
+        }
+      ]
+    }
+  },
+  "theme": {
+    "name": "default",
+    "appearance": "system",
+    "codeHighlight": true,
+    "customCss": ["assets/css/custom.css"]
+  },
+  "customJs": ["assets/js/logo-link.js"],
+  "minify": true,
+  "autoTitleFromH1": true,
+  "copyCode": true,
+  "pageNavigation": true,
+  "plugins": {
+    "seo": {
+      "defaultDescription": "WhelkMail — a self-hosted, Cloudflare-native webmail client for the IMAP and SMTP accounts you already own."
+    },
+    "sitemap": {
+      "defaultChangefreq": "weekly",
+      "defaultPriority": 0.8
+    }
+  }
+}
