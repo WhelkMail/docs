@@ -5,6 +5,17 @@ description: Requirements, local setup and connecting your first mailbox to Whel
 
 # Getting started
 
+## Fast path: the installer (beta)
+
+The [WhelkMail Installer](https://github.com/WhelkMail/installer) creates a deployment in **your** Cloudflare account and does not require you to follow the manual steps below. It supports two paths:
+
+- **Browser:** copy the [installer template](https://github.com/WhelkMail/installer), add `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `APP_PASSWORD` and `TOKEN_ENC_KEY` as repository secrets, then run the **Install WhelkMail** workflow from the Actions tab.
+- **Terminal:** with Node.js 22+ run `npx github:WhelkMail/installer` and follow the prompts.
+
+The installer stores secrets, creates the Pages project and the D1 database, deploys the app and verifies the health endpoint. It is still **beta**, so check the run log; the manual path in [Deployment](deployment) is the fully documented fallback. Re-running it is safe: resources and the database are reused and migrations are idempotent.
+
+To look around without deploying anything, open the [live demo](https://demo.whelkmail.eu). It is a static preview of the real UI where every API call is mocked in the browser: no real mailbox, no network access and no data leaves the tab.
+
 ## Requirements
 
 - Node.js 22 or newer and npm.

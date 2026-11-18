@@ -15,6 +15,11 @@ Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a fam
 
 ![WhelkMail inbox](/assets/images/screenshots/inbox.png)
 
+## Try it, or install it
+
+- **Live demo:** [demo.whelkmail.eu](https://demo.whelkmail.eu) is a static, backend-free preview of WhelkMail. It runs the real UI but replaces every API call with an in-memory mock, so there is no D1, no IMAP/SMTP and no network access. Every account, message and attachment is fake, and actions only change the current browser tab.
+- **Installer (beta):** the [WhelkMail Installer](https://github.com/WhelkMail/installer) provisions and deploys a WhelkMail instance inside **your** Cloudflare account. It creates the Pages project and the D1 database, stores `APP_PASSWORD` and `TOKEN_ENC_KEY`, deploys the app and checks `GET /api/health`. You can run it from GitHub Actions in the browser or from the terminal with `npx github:WhelkMail/installer`. The installer is a convenience on top of the manual deployment described in [Deployment](deployment); manual deployment remains fully supported.
+
 ## Why WhelkMail
 
 - **One inbox, many accounts.** Gmail, Outlook, iCloud, Yahoo and custom domains side by side, with colored account labels and a shared address book.

@@ -9,6 +9,15 @@ This is the complete, step-by-step guide to run WhelkMail on Cloudflare. You do 
 
 > **Important:** this is not a static site. Deploy it as a **Pages project with Functions**. The `functions/` directory is the API (IMAP/SMTP over `cloudflare:sockets`). Uploading only `dist` without Functions will break every API call.
 
+## Fast path: the installer (beta)
+
+The [WhelkMail Installer](https://github.com/WhelkMail/installer) automates the resource creation and deployment described in this guide. It runs against **your** Cloudflare account and performs the same steps: it creates (or reuses) the D1 database `mail-client` and the Pages project, writes the `DB` binding and the optional `BUCKET` binding, uploads `APP_PASSWORD`, `TOKEN_ENC_KEY` and the optional cron/VAPID secrets, applies the schema and migrations, deploys `dist` and verifies `GET /api/health`.
+
+- **Browser:** copy the installer repository, add the required secrets in GitHub, then run the **Install WhelkMail** workflow.
+- **Terminal:** `npx github:WhelkMail/installer` (flags such as `--dry-run`, `--r2`, `--cron`, `--push`, `--ref <tag>`, `--project-name <name>`).
+
+The installer is **beta**. It is a convenience on top of the manual process below, which remains the reference path and the fallback if a run fails. Re-running the installer is safe: existing resources are reused, secrets are overwritten and database migrations are idempotent. To try the app first without deploying, use the [live demo](https://demo.whelkmail.eu) — a static, backend-free preview with mocked API calls and fake data.
+
 ## What you will create
 
 | Cloudflare resource | Purpose |
