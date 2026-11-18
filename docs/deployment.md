@@ -56,12 +56,12 @@ The zero UUID in the example is fine for local development. For remote CLI comma
 
 > The D1 database intentionally keeps the legacy name `mail-client` so existing deployments and data continue to work after the whelkmail rebrand. Only the Pages project is named `whelkmail`.
 
-Dashboard equivalent: **Storage & Databases â†’ D1 SQL Database â†’ Create**.
+Dashboard equivalent: **Storage & Databases → D1 SQL Database → Create**.
 
 ### 1.2 Create the Pages project from GitHub
 
 1. Open **Workers & Pages** in the Cloudflare dashboard.
-2. **Create** â†’ **Pages** â†’ **Connect to Git**.
+2. **Create** → **Pages** → **Connect to Git**.
 3. Select the repository and branch.
 4. Project name: `whelkmail`.
 5. Build settings:
@@ -79,7 +79,7 @@ Add an environment variable `NODE_VERSION=22` in the Pages project settings if t
 
 ### 1.3 Add bindings
 
-In the Pages project: **Settings â†’ Bindings**.
+In the Pages project: **Settings → Bindings**.
 
 Required:
 
@@ -97,7 +97,7 @@ Use exactly these names. The code reads `env.DB` and `env.BUCKET`.
 
 ### 1.4 Add secrets and variables
 
-In the Pages project: **Settings â†’ Variables and Secrets**. Add them to **Production** and, if you use preview deployments, to **Preview** as well.
+In the Pages project: **Settings → Variables and Secrets**. Add them to **Production** and, if you use preview deployments, to **Preview** as well.
 
 Required:
 
@@ -156,7 +156,7 @@ The migrations are additive and recorded in `schema_migrations`, so a plain reru
 node scripts/migrate.mjs remote --from=013
 ```
 
-Migration `012` also invalidates existing sessions: users must sign in again. Two-factor authentication is available in Settings â†’ Security and is disabled by default.
+Migration `012` also invalidates existing sessions: users must sign in again. Two-factor authentication is available in Settings → Security and is disabled by default.
 
 ### 1.6 Web Push notifications (optional)
 
@@ -187,14 +187,14 @@ npm run cron:deploy
 
 `npm run cron:deploy` creates the file from the template when it is missing and stops with a clear error while `APP_URL` is still empty or a placeholder.
 
-The worker runs every 5 minutes and calls `POST /api/cron/notifications` on the Pages app. In the same run it also applies automatic forwarding rules, the optional provider cleanup, and the per-account automatic background sync. Enable notifications from **Settings â†’ Push notifications**, background sync per account in Settings, and forwarding/deletion in the account/filter sections.
+The worker runs every 5 minutes and calls `POST /api/cron/notifications` on the Pages app. In the same run it also applies automatic forwarding rules, the optional provider cleanup, and the per-account automatic background sync. Enable notifications from **Settings → Push notifications**, background sync per account in Settings, and forwarding/deletion in the account/filter sections.
 
 See [PWA and Web Push](pwa-push) for the full setup.
 
 ### 1.7 Deploy
 
 - **Git integration:** push to the connected branch. Cloudflare builds and deploys automatically.
-- **Manual retry:** Pages project â†’ **Deployments** â†’ **Retry deployment**.
+- **Manual retry:** Pages project → **Deployments** → **Retry deployment**.
 
 The first deployment URL is `https://whelkmail.pages.dev` (or the project name you chose).
 
@@ -218,7 +218,7 @@ The first deployment URL is `https://whelkmail.pages.dev` (or the project name y
 
 ### 1.9 Custom domain
 
-1. Pages project â†’ **Custom domains** â†’ **Set up a custom domain**.
+1. Pages project → **Custom domains** → **Set up a custom domain**.
 2. Enter the hostname and follow the DNS instructions.
 3. Wait for the certificate to become active.
 4. If you use OAuth, update the redirect URIs to the new hostname.
@@ -270,8 +270,8 @@ ALTER TABLE accounts ADD COLUMN relay_region TEXT;
 
 R2 is used by send-only relay accounts and by IMAP accounts that enable the optional body/attachment archive. By default IMAP accounts keep everything on the mail provider.
 
-1. **R2 Object Storage â†’ Create bucket**.
-2. Pages project â†’ **Settings â†’ Bindings** â†’ add an R2 bucket binding named `BUCKET`.
+1. **R2 Object Storage → Create bucket**.
+2. Pages project → **Settings → Bindings** → add an R2 bucket binding named `BUCKET`.
 3. Redeploy.
 
 If the binding is absent, the R2 option is hidden in the UI.
@@ -280,7 +280,7 @@ If the binding is absent, the R2 option is hidden in the UI.
 
 - `GET /api/health` returns `ok: true`.
 - Login succeeds with `APP_PASSWORD` (plus the TOTP code if 2FA is enabled).
-- Optional: 2FA can be enabled in Settings â†’ Security, and a recovery code can complete the login.
+- Optional: 2FA can be enabled in Settings → Security, and a recovery code can complete the login.
 - Security headers are present on `/` and `/api/health`.
 - **Test connection** succeeds for an IMAP account.
 - Sending adds a copy to the provider Sent folder (or the app appends it when `auto_saves_sent` is off).
@@ -293,7 +293,7 @@ If the binding is absent, the R2 option is hidden in the UI.
 
 ### Logs
 
-Pages project â†’ **Deployments** â†’ select deployment â†’ **Logs**, or:
+Pages project → **Deployments** → select deployment → **Logs**, or:
 
 ```bash
 npx wrangler pages deployment tail --project-name whelkmail
@@ -301,7 +301,7 @@ npx wrangler pages deployment tail --project-name whelkmail
 
 ### Rollback
 
-Pages project â†’ **Deployments** â†’ select a previous deployment â†’ **Rollback**.
+Pages project → **Deployments** → select a previous deployment → **Rollback**.
 
 ### D1 backup
 

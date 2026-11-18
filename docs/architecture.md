@@ -79,6 +79,6 @@ worker/wrangler.toml.example  cron worker template (the real file is gitignored)
 
 ## Related
 
-- [Mail flows](mail-flows) â€” the request flows end to end.
-- [Data model](data-model) â€” every table and its role.
-- [Security](security) â€” the threat model and protections.
+- [Mail flows](mail-flows) — the request flows end to end.
+- [Data model](data-model) — every table and its role.
+- [Security](security) — the threat model and protections.

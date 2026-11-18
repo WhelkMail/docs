@@ -88,6 +88,6 @@ OAuth application setup is covered in [OAuth setup](oauth).
 
 ## Next steps
 
-- [Deployment](deployment) â€” run it on Cloudflare.
-- [Configuration](configuration) â€” all bindings, secrets and variables.
-- [PWA and Web Push](pwa-push) â€” install the app and enable notifications.
+- [Deployment](deployment) — run it on Cloudflare.
+- [Configuration](configuration) — all bindings, secrets and variables.
+- [PWA and Web Push](pwa-push) — install the app and enable notifications.

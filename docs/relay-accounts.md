@@ -49,7 +49,7 @@ A failed send is recorded as `failed` only when the provider answered with a ref
 
 A relay with **Send from any address on this domain** (`accounts.relay_any_address`) can answer as the address the message was actually sent to, as long as it is on the account's exact domain. This makes a forwarding domain work with one account instead of one per address.
 
-The alias is chosen from trusted forwarding headers first, then To/Cc, and only when the receiving server's topmost `Authentication-Results` vouches for the domain. The address is shown in the From field before sending and can be switched back. See [Mail flows â†’ Reply](mail-flows#reply) for the full rules.
+The alias is chosen from trusted forwarding headers first, then To/Cc, and only when the receiving server's topmost `Authentication-Results` vouches for the domain. The address is shown in the From field before sending and can be switched back. See [Mail flows → Reply](mail-flows#reply) for the full rules.
 
 ## Drafts
 
@@ -73,11 +73,11 @@ The alias is chosen from trusted forwarding headers first, then To/Cc, and only 
 > **Experimental.** The maintainer has not exercised it against a real Cloudflare account, so delivery, suppression handling (error `10205`), rate limits and per-recipient reporting are unverified.
 
 - API key: API token with **Email Sending: Edit**.
-- The sending domain must be onboarded under **Email Service â†’ Email Sending**.
+- The sending domain must be onboarded under **Email Service → Email Sending**.
 - WhelkMail enforces at most **50 recipients** and **15 MiB of attachments** per message.
 - Custom SMTP can't target Cloudflare's own SMTP endpoint from Workers.
 
-See [OAuth setup â†’ Cloudflare Email Service](oauth#cloudflare-email-service) for the full setup.
+See [OAuth setup → Cloudflare Email Service](oauth#cloudflare-email-service) for the full setup.
 
 ## IMAP body archive
 

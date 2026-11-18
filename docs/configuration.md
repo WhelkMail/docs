@@ -75,11 +75,11 @@ Relay credentials can also be entered per account in the UI and are encrypted at
 
 Some preferences are stored in the `app_settings` table instead of environment variables, and are edited from the UI:
 
-- `default_signature`, `signature_mode` â€” shared signature or one per account.
-- `allow_remote_images` â€” global default for remote images.
-- `metadata_retention_days`, `retention_stats` â€” metadata retention window and last cleanup.
+- `default_signature`, `signature_mode` — shared signature or one per account.
+- `allow_remote_images` — global default for remote images.
+- `metadata_retention_days`, `retention_stats` — metadata retention window and last cleanup.
 - TOTP/2FA material.
-- `update_check`, `update_notice_dismissed` â€” release-check cache and dismissal.
+- `update_check`, `update_notice_dismissed` — release-check cache and dismissal.
 
 ## Local environment file
 

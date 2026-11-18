@@ -59,21 +59,21 @@ Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a fam
 
 ## Explore the documentation
 
-- [Getting started](getting-started) â€” run WhelkMail locally and connect your first account.
-- [Deployment](deployment) â€” the complete Cloudflare Pages guide.
-- [Configuration](configuration) â€” bindings, secrets and environment variables.
-- [Architecture](architecture) â€” how the client, Pages Functions, D1 and IMAP/SMTP fit together.
-- [Mail flows](mail-flows) â€” listing, search, reading, sending, replies, threads and drafts.
-- [Data model](data-model) â€” every D1 table and what it stores.
-- [Security](security) â€” authentication, sessions, encryption and hardening.
-- [Relay accounts](relay-accounts) â€” send-only domains and storage destinations.
-- [Labels and filters](labels-filters) â€” shared taxonomy and automatic rules.
-- [PWA and Web Push](pwa-push) â€” installable app and notifications.
-- [Forwarding and cleanup](forwarding-cleanup) â€” filter forwarding and provider deletion.
-- [Development](development) â€” local workflow, database migrations and tests.
-- [Upgrading](upgrading) â€” deploy a new release safely.
-- [Troubleshooting](troubleshooting) â€” common symptoms and fixes.
-- [Known limitations](limitations) â€” what WhelkMail deliberately does not do.
+- [Getting started](getting-started) — run WhelkMail locally and connect your first account.
+- [Deployment](deployment) — the complete Cloudflare Pages guide.
+- [Configuration](configuration) — bindings, secrets and environment variables.
+- [Architecture](architecture) — how the client, Pages Functions, D1 and IMAP/SMTP fit together.
+- [Mail flows](mail-flows) — listing, search, reading, sending, replies, threads and drafts.
+- [Data model](data-model) — every D1 table and what it stores.
+- [Security](security) — authentication, sessions, encryption and hardening.
+- [Relay accounts](relay-accounts) — send-only domains and storage destinations.
+- [Labels and filters](labels-filters) — shared taxonomy and automatic rules.
+- [PWA and Web Push](pwa-push) — installable app and notifications.
+- [Forwarding and cleanup](forwarding-cleanup) — filter forwarding and provider deletion.
+- [Development](development) — local workflow, database migrations and tests.
+- [Upgrading](upgrading) — deploy a new release safely.
+- [Troubleshooting](troubleshooting) — common symptoms and fixes.
+- [Known limitations](limitations) — what WhelkMail deliberately does not do.
 
 ## Stack
 

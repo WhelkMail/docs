@@ -1,6 +1,6 @@
 # WhelkMail Documentation
 
-Documentation website for [WhelkMail](https://github.com/WhelkMail/WhelkMail) — a self-hosted, Cloudflare-native webmail client for the IMAP and SMTP accounts you already own.
+Documentation website for [WhelkMail](https://github.com/WhelkMail/WhelkMail) — a self-hosted, Cloudflare-native webmail client for the IMAP and SMTP accounts you already own. This repository contains the source code for [WhelkMail's docs site](https://docs.whelkmail.eu).
 
 Built with [docmd](https://github.com/docmd-io/docmd).
 

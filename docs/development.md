@@ -14,7 +14,7 @@ This page describes how to work on WhelkMail, how the two repositories relate, a
 | `mlzog/WhelkMail` (development, remote `origin`) | development. Commits can be small, messy and frequent. |
 | `WhelkMail/WhelkMail` (remote `public`) | distribution. Anyone can install it. |
 
-Both repositories share **one history**: `public/main` is an ancestor of the development branch (see the unification merge). That keeps the two in sync with plain merges and fast-forward pushes, and it is why a PR merged on GitHub is brought back with `git merge public/main` instead of a cherry-pick â€” a cherry-pick would create a duplicate commit for content that already exists.
+Both repositories share **one history**: `public/main` is an ancestor of the development branch (see the unification merge). That keeps the two in sync with plain merges and fast-forward pushes, and it is why a PR merged on GitHub is brought back with `git merge public/main` instead of a cherry-pick — a cherry-pick would create a duplicate commit for content that already exists.
 
 ## Local setup
 

@@ -23,7 +23,7 @@ Each account can define an `incoming_label_id`. When the inbox is listed, every 
 
 ## Filters
 
-Automatic filtering is managed in Settings â†’ Filters and is shared across accounts.
+Automatic filtering is managed in Settings → Filters and is shared across accounts.
 
 - Criteria are ANDed and matching is case-insensitive.
 - Match fields: From, To, Subject, words, words that must not appear, and attachment presence.

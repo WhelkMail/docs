@@ -20,13 +20,13 @@ WhelkMail is a client, not a mail server. These are the deliberate boundaries an
 - Inbox, Sent, Drafts and Spam are available as folders. Messages can be selected in bulk, deleted, moved to Inbox/Spam/Trash, or marked as spam from the reading pane.
 - Recent message bodies (up to 512 KB) are cached in D1 for up to 3 days; larger messages and attachments are re-read from the provider unless a long-term archive is configured. Inline `cid:` images are embedded in the detail response.
 - A label view uses the D1 mirror when available and falls back to fetching the labeled UIDs from the provider.
-- Mirrored IMAP metadata is kept indefinitely by default. Settings â†’ Appearance can limit it to a retention window: older messages are removed from the D1 mirror (never from the provider, and never drafts), together with their label assignments. Pruned messages disappear from lists, search and label views; only a direct message link still opens one. **Download metadata again** clears the sync cursors so the mirror is rebuilt from the provider, but their labels are not restored. The archive copy in R2/Drive is left untouched.
+- Mirrored IMAP metadata is kept indefinitely by default. Settings → Appearance can limit it to a retention window: older messages are removed from the D1 mirror (never from the provider, and never drafts), together with their label assignments. Pruned messages disappear from lists, search and label views; only a direct message link still opens one. **Download metadata again** clears the sync cursors so the mirror is rebuilt from the provider, but their labels are not restored. The archive copy in R2/Drive is left untouched.
 - Filters run when the inbox is loaded and when a sync ingests new inbox messages. Matching uses From/To/Subject/snippet, not the full message body.
 - Forwarding and provider deletion run from the cron worker, so they require the same setup as Web Push. They only act on new incoming messages detected after the initial sync.
 
 ## Sending and addresses
 
-- The sender is the account address: there is no free-form "send as". Replies pick the account whose address received the message, and **Reply as** in Settings â†’ Accounts overrides that choice per mailbox.
+- The sender is the account address: there is no free-form "send as". Replies pick the account whose address received the message, and **Reply as** in Settings → Accounts overrides that choice per mailbox.
 - A relay account with **Send from any address on this domain** replies from the address on its domain that the message was sent to, without an account per address.
 - The alias is read from headers that aren't signed, so a forwarding header only counts when the receiving server's topmost `Authentication-Results` reports a passing DKIM signature for that domain. A server that adds none, or a signed message replayed straight to the inbox with a forwarding header added, can still mislead it. The address is always limited to the relay's exact domain and is shown in the From field before sending, and two relays allowed to send as the same domain make the alias ambiguous, so none is offered.
 - Switching the IMAP body archive between R2 and Drive keeps the previously archived messages readable: each row records the backend that wrote it (legacy rows fall back to trying both).
@@ -43,7 +43,7 @@ WhelkMail is a client, not a mail server. These are the deliberate boundaries an
 
 - Single shared `APP_PASSWORD` (with optional TOTP); this is a personal / small-team tool, not a multi-tenant service.
 - Login rate limiting is per IP and best-effort, not a substitute for Cloudflare Access or a WAF.
-- Account deletion removes D1 rows and makes a best-effort cleanup of R2/Drive objects referenced in D1; it never deletes mail from the provider. Objects that cannot be removed (for example a revoked Drive token) are listed in Settings â†’ System â†’ "Objects left behind".
+- Account deletion removes D1 rows and makes a best-effort cleanup of R2/Drive objects referenced in D1; it never deletes mail from the provider. Objects that cannot be removed (for example a revoked Drive token) are listed in Settings → System → "Objects left behind".
 - Deleting a mailbox that stores the sent copies of a send-only account needs a second confirmation, because those copies stay on the provider but their attachments and `.eml` stop being reachable from the app.
 - Provider error details are returned to the authenticated admin to help with IMAP/SMTP setup.
 - New releases are announced inside the app by comparing the installed version with the latest GitHub release. The check is informational only: it cannot update a deployment. Set `UPDATE_CHECK=off` to disable it.

@@ -55,7 +55,7 @@ Every 5 minutes, in the same run, it:
 - runs the optional provider cleanup;
 - advances the per-account automatic background sync.
 
-Enable notifications from **Settings â†’ Push notifications**, background sync per account in Settings, and forwarding/deletion in the account/filter sections.
+Enable notifications from **Settings → Push notifications**, background sync per account in Settings, and forwarding/deletion in the account/filter sections.
 
 ## PWA assets
 
@@ -75,7 +75,7 @@ Android masks `badge` into a monochrome silhouette in the status bar and does no
 - `UPDATE_CHECK=off` disables it and `GITHUB_TOKEN` optionally raises the rate limit.
 - The check reads `/releases/latest` from the API and falls back to the releases Atom feed when the API fails, so it does not depend on the API alone.
 - The answer is cached in `app_settings.update_check` for 24 hours (15 minutes after a failure or when no release exists yet), so each deployment makes at most one request per day.
-- A cached copy is still served when GitHub is unreachable, and `GET /api/update?refresh=1` (Settings â†’ System â†’ **Check again**) bypasses the cache.
+- A cached copy is still served when GitHub is unreachable, and `GET /api/update?refresh=1` (Settings → System → **Check again**) bypasses the cache.
 - Failures are logged from the Worker.
 
 When the latest release is newer, the client shows a dismissible banner with the upgrade steps and a link to the upgrade guide; the dismissal is stored server-side (`update_notice_dismissed`) per release version. `POST /api/update` records it. `GET /api/health` exposes `version` too, so a tab left open on an older bundle can offer a reload when it sees a newer server.

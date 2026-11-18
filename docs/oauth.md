@@ -11,8 +11,8 @@ OAuth is optional for generic IMAP and for app-password accounts. It is required
 
 Use a dedicated OAuth client, separate from the Drive client, so the Drive-only configuration remains non-sensitive.
 
-1. Google Cloud Console â†’ create or select a project.
-2. OAuth consent screen â†’ **External** (or **Internal** for Workspace-only use).
+1. Google Cloud Console → create or select a project.
+2. OAuth consent screen → **External** (or **Internal** for Workspace-only use).
 3. Add scopes:
    - `openid`
    - `email`
@@ -34,8 +34,8 @@ Important: `https://mail.google.com/` is a **restricted** Google scope.
 
 Used by relay accounts that archive on Drive and by IMAP accounts that enable **Archive bodies and attachments** in their sync settings.
 
-1. Google Cloud Console â†’ enable the Google Drive API.
-2. OAuth consent screen â†’ **External**.
+1. Google Cloud Console → enable the Google Drive API.
+2. OAuth consent screen → **External**.
 3. Scopes: `openid`, `email`, `https://www.googleapis.com/auth/drive.file`.
 4. Create an OAuth client ID of type **Web application**.
 5. Redirect URIs:
@@ -50,12 +50,12 @@ Files live in a `MailClient` folder. Google Drive offers 15 GB free for personal
 
 ## Microsoft OAuth (Outlook / Microsoft 365)
 
-1. Microsoft Entra ID â†’ **App registrations** â†’ **New registration**.
+1. Microsoft Entra ID → **App registrations** → **New registration**.
 2. Supported account types: personal and/or organizational, depending on your users.
 3. Redirect URI (Web):
    - `https://<your-domain>/api/microsoft/oauth/callback`
    - `http://localhost:8788/api/microsoft/oauth/callback`
-4. **Certificates & secrets** â†’ create a client secret.
+4. **Certificates & secrets** → create a client secret.
 5. API permissions (delegated):
    - Office 365 Exchange Online: `IMAP.AccessAsUser.All`, `SMTP.Send`
    - OpenID: `offline_access`, `openid`, `email`, `profile`
@@ -82,7 +82,7 @@ Supported providers: SMTP2GO, Resend, Mailgun, Brevo, SendGrid, Mailjet, Postmar
 
 - API key: an API token with the **Email Sending: Edit** permission. An account API token is simplest: it reaches exactly one account.
 - Account ID: optional. Left blank, WhelkMail looks it up from the API token when the account is saved, which works when the token reaches exactly one account. A user API token that reaches several accounts needs the ID entered. A token that reaches **no** account at all is refused with `relay_account_unavailable`.
-- The sending domain must be onboarded under **Email Service â†’ Email Sending** in the same account. Each subdomain is onboarded separately. If it isn't, sending fails with a message naming the domain (Cloudflare error `10203`).
+- The sending domain must be onboarded under **Email Service → Email Sending** in the same account. Each subdomain is onboarded separately. If it isn't, sending fails with a message naming the domain (Cloudflare error `10203`).
 - By default, a message with any recipient on Cloudflare's suppression list is rejected outright (error `10205`). Turn on **Drop suppressed recipients** for the sending domain to send to the other recipients instead.
 - The custom SMTP option can't be used with Cloudflare's SMTP endpoint (`smtp.mx.cloudflare.net`): Workers block TCP sockets to Cloudflare's own IP ranges.
 - Limits enforced by WhelkMail before the API call: at most **50 recipients** per message (to, cc and bcc combined) and **15 MiB of attachments**, to stay under Cloudflare's 25 MiB encoded-message limit.

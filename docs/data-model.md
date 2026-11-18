@@ -38,7 +38,7 @@ Used for relay accounts: sent copies and drafts. IMAP messages are read from the
 
 When a relay account stores copies in an IMAP mailbox, `storage_key` holds a pointer (`imap:<accountId>:<encodedFolder>:<uid>`) instead of an object key: the body and attachments are read from that mailbox, and the copy is removed there when the message or draft is deleted. Account deletion never touches those messages.
 
-Each row keeps the driver that actually wrote its copy: `storageForDriver(env, account, row.storage_driver)` is used for reading and for deleting objects, while `getStorage(env, account)` is only used to write new ones. Changing the destination of an account (Drive â†’ R2 â†’ mailbox) therefore leaves the historical copies readable and deletable.
+Each row keeps the driver that actually wrote its copy: `storageForDriver(env, account, row.storage_driver)` is used for reading and for deleting objects, while `getStorage(env, account)` is only used to write new ones. Changing the destination of an account (Drive → R2 → mailbox) therefore leaves the historical copies readable and deletable.
 
 Fields include folder, addresses JSON, subject, snippet, body text/HTML, size, storage key, attachment metadata, conversation key and status.
 
@@ -80,11 +80,11 @@ The folder list reads from `imap_messages` first. Opening a folder does not bloc
 
 ### Metadata retention
 
-`app_settings.metadata_retention_days` is `0` by default (keep everything) and is edited from Settings â†’ Appearance. When set, the cron worker deletes `imap_messages` rows older than the window (never drafts, never anything on the provider) together with their `message_labels` rows, in batches of 500 up to 5.000 per run.
+`app_settings.metadata_retention_days` is `0` by default (keep everything) and is edited from Settings → Appearance. When set, the cron worker deletes `imap_messages` rows older than the window (never drafts, never anything on the provider) together with their `message_labels` rows, in batches of 500 up to 5.000 per run.
 
 Pruned messages no longer appear in folder lists, search results or label views, and the incremental sync does not pull them back because it tracks `max_uid`/`min_uid` instead of re-scanning UIDs. Only a direct message id still opens one, because reading a message falls back to IMAP when the mirror has no row. The R2/Drive archive copy is untouched, and lowering then raising the window does not restore the removed rows.
 
-Each pruning run is recorded in `app_settings.retention_stats` (`lastRunAt`, `lastDeleted`, `deletedTotal`, `cutoff`), read by `GET /api/retention` and shown in Settings â†’ Appearance. `POST /api/retention` with an optional `{ accountId }` clears the `imap_sync` cursors of the IMAP accounts and queues a sync, so the next runs walk the mailbox again and recreate the pruned rows. Label assignments are not recovered, and a full rescan costs one metadata chunk per folder per sync run.
+Each pruning run is recorded in `app_settings.retention_stats` (`lastRunAt`, `lastDeleted`, `deletedTotal`, `cutoff`), read by `GET /api/retention` and shown in Settings → Appearance. `POST /api/retention` with an optional `{ accountId }` clears the `imap_sync` cursors of the IMAP accounts and queues a sync, so the next runs walk the mailbox again and recreate the pruned rows. Label assignments are not recovered, and a full rescan costs one metadata chunk per folder per sync run.
 
 ### Body archive
 
@@ -115,12 +115,12 @@ Key/value store for deployment-wide preferences: signatures (`default_signature`
 
 ## Security tables
 
-- `sessions` â€” SHA-256 hashes of server-side session IDs.
-- `login_attempts` â€” rate limiting per IP.
-- `oauth_states` â€” one-time OAuth state with a 10-minute TTL.
-- `imap_sync_locks` â€” cross-isolate sync lock.
-- `schema_migrations` â€” applied migration registry.
-- `storage_cleanup_log` â€” objects that could not be removed during account deletion.
+- `sessions` — SHA-256 hashes of server-side session IDs.
+- `login_attempts` — rate limiting per IP.
+- `oauth_states` — one-time OAuth state with a 10-minute TTL.
+- `imap_sync_locks` — cross-isolate sync lock.
+- `schema_migrations` — applied migration registry.
+- `storage_cleanup_log` — objects that could not be removed during account deletion.
 
 ## Related
 

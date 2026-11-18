@@ -9,7 +9,7 @@ WhelkMail is intended for personal or small trusted deployments. This page descr
 
 ## Authentication
 
-- **Single shared password + optional 2FA:** `APP_PASSWORD` protects the whole deployment. Two-factor authentication (TOTP, RFC 6238) can be enabled in Settings â†’ Security; it is **off by default** and works with any authenticator app. Recovery codes are shown once and stored only as SHA-256 hashes.
+- **Single shared password + optional 2FA:** `APP_PASSWORD` protects the whole deployment. Two-factor authentication (TOTP, RFC 6238) can be enabled in Settings → Security; it is **off by default** and works with any authenticator app. Recovery codes are shown once and stored only as SHA-256 hashes.
 - **Sessions:** random 256-bit session IDs; only their SHA-256 hashes are stored in D1 (`sessions`). TTL is 7 days. Cookies are `HttpOnly`, `SameSite=Lax`, and `Secure` on HTTPS. Logout revokes the session. Deleting the `sessions` table rows invalidates all sessions.
 - **Brute-force protection:** login and 2FA attempts are rate limited per IP in D1 (10 attempts per 15 minutes, then a 15-minute block).
 - **Origin check:** mutating requests with a foreign `Origin` header are rejected.
