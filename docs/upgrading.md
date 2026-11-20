@@ -35,6 +35,10 @@ WhelkMail is self-hosted: nobody can push an update into your deployment. This g
 
 4. **Reload the app.** A tab left open on the old bundle shows a "reload" notice; after the reload, Settings → System reports the new version.
 
+## Migrations in recent releases
+
+Release 1.2.0 adds `030_account_label_filters.sql`: it adds `filters.auto_label`, creates the unique index for each account's automatic filter and converts existing `accounts.incoming_label_id` settings into editable filters. Run `npm run db:migrate:remote` before deploying 1.2.0. Existing data is preserved.
+
 ## If something goes wrong
 
 - **The app returns a schema error.** The code is newer than the database. Run `npm run db:migrate:remote`, then retry.

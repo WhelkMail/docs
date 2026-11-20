@@ -1,6 +1,6 @@
 ---
 title: Labels and filters
-description: Shared Gmail-style labels, per-account incoming labels, contacts, signatures and automatic filters.
+description: Shared Gmail-style labels, per-account automatic labels, contacts, signatures and automatic filters.
 ---
 
 # Labels and filters
@@ -17,21 +17,24 @@ Clicking a label opens a label view: the API reads `message_labels`, groups the 
 
 When a message moves to another folder on the provider, its UID changes and the local label assignment no longer applies. The optional IMAP metadata sync mirrors headers and UIDs, but labels still follow the UID, so a move can lose the local assignment until the message is labeled again.
 
-## Incoming labels
+## Automatic account labels
 
-Each account can define an `incoming_label_id`. When the inbox is listed, every incoming message of that account receives the shared label automatically. The label is chosen while adding the account or in Settings; if it does not exist, it is created.
+Each account can define an `incoming_label_id`. The label is chosen while adding the account or in Settings; if it does not exist, it is created.
+
+The automatic label is stored as a real filter: a match-all rule scoped to that account and marked with `auto_label`. It appears in Settings -> Filters like any other rule and can be edited or disabled there. It applies to every message of the account in every folder, not only the inbox. Changing the label in Settings updates the filter, and editing the filter keeps the account setting in step. "Apply every filter" also labels the messages that were already present.
 
 ## Filters
 
-Automatic filtering is managed in Settings → Filters and is shared across accounts.
+Automatic filtering is managed in Settings -> Filters. A filter with an empty `account_id` applies to every account; a filter with an account id only sees that account's mail. The automatic account label is one of these account-scoped, match-all filters.
 
 - Criteria are ANDed and matching is case-insensitive.
 - Match fields: From, To, Subject, words, words that must not appear, and attachment presence.
 - Actions can apply one or more labels, forward to recipients, or both, like Gmail.
-- Matching runs when the inbox is listed and when the cron worker syncs new inbox messages.
+- Matching runs whenever a folder is listed and whenever the sync ingests new messages, in every folder: Inbox, Sent, Drafts, Trash and Spam.
+- Applying a filter to mail already received walks the IMAP mirror and the local `messages` rows, so relay sent copies and drafts are covered too.
 - The match text covers sender, recipients, subject and snippet, **not** the full body.
 
-Forwarding uses the original EML, attaches it as `message/rfc822` and stamps `X-WhelkMail-Forwarded` to prevent loops. See [Forwarding and cleanup](forwarding-cleanup).
+Forwarding uses the original EML, attaches it as `message/rfc822` and stamps `X-WhelkMail-Forwarded` to prevent loops. Forwarding remains an incoming-mail action: matching messages are forwarded only from the inbox, even though labels are applied in every folder. See [Forwarding and cleanup](forwarding-cleanup).
 
 ## Contacts
 

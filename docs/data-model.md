@@ -25,7 +25,7 @@ Important fields:
 - `reply_account_id`: account that sends the replies to messages received here. Used when a domain only forwards to this mailbox and sends through a relay account; cleared when that account is deleted
 - `relay_any_address`: relay accounts only. When set, replies may leave from any address on the account's exact domain. Off by default
 - `signature`: optional per-account signature, used only when `signature_mode` is `per_account`
-- `incoming_label_id`: optional shared label applied automatically to every incoming message of this account
+- `incoming_label_id`: optional shared label applied automatically to every message of this account. The labelling itself is a match-all filter scoped to the account (`filters.auto_label = 1`), so it stays editable in Settings -> Filters
 - `delete_after_archive`: opt-in provider cleanup; archived incoming messages are moved to the provider Trash
 - `auto_sync`: opt-in automatic background sync for Inbox, Sent, Drafts and Spam via the cron worker
 - `storage_driver`: `provider`, `drive`, `r2` or `imap` (relay accounts only)
@@ -50,9 +50,9 @@ IMAP assignments survive page reloads but refer to IMAP UIDs; if a mailbox chang
 
 ## `filters`
 
-Gmail-style automatic filters, shared across all accounts. Each row stores criteria (`from_pattern`, `to_pattern`, `subject_pattern`, `has_words`, `doesnt_have`, `has_attachment`) and actions: label ids in `label_ids_json` and forwarding recipients in `forward_to_json`. The legacy `account_id` column is kept only for schema compatibility and is set to an empty string for new rows.
+Gmail-style automatic filters. `account_id` is empty for a filter that applies to every account, and holds an account id for a filter scoped to that account. The automatic account label is an account-scoped, match-all row marked `auto_label = 1`, and a unique index keeps one per account. Each row stores criteria (`from_pattern`, `to_pattern`, `subject_pattern`, `has_words`, `doesnt_have`, `has_attachment`) and actions: label ids in `label_ids_json` and forwarding recipients in `forward_to_json`.
 
-Enabled filters are evaluated when the inbox is listed and when the cron worker syncs new inbox messages; matching messages receive the labels in `message_labels` and are forwarded when `forward_to_json` is not empty.
+Enabled filters are evaluated whenever a folder is listed and whenever sync ingests new messages, in every folder. Matching messages receive the labels in `message_labels`; forwarding is only triggered for matching inbox messages. Applying the enabled filters to mail already received walks `imap_messages` and then the local `messages` table, so relay sent copies and drafts are included too.
 
 ## `contacts`
 
@@ -76,7 +76,7 @@ The folder list reads from `imap_messages` first. Opening a folder does not bloc
 
 ### Automatic sync
 
-`accounts.auto_sync` enables the cron worker to advance Inbox, Sent, Drafts and Spam every 5 minutes. Each run processes one bounded chunk per folder and resumes on the next run. New IMAP accounts enable it by default; existing accounts can still rely on the sync scheduled when a folder is opened.
+`accounts.auto_sync` enables the cron worker to advance Inbox, Sent, Drafts and Spam. The worker wakes up every minute and each account is synced when its own `sync_interval_minutes` has elapsed (1, 2, 5, 10, 15 or 30; default 5). Each run processes one bounded chunk per folder and resumes on the next run. New IMAP accounts enable it by default; existing accounts can still rely on the sync scheduled when a folder is opened.
 
 ### Metadata retention
 
@@ -100,7 +100,7 @@ R2 requires a bound `BUCKET`; Drive requires the account's Google Drive OAuth co
 
 `forward_log` records the last forwarding result per `(filter_id, message_id)` and prevents duplicate forwards. `deletion_log` records provider-cleanup results per message.
 
-Forwarding is an action of a filter. The cron endpoint evaluates filters for new incoming messages, applies their labels and forwards matching messages to the filter recipients. The original EML is attached, and the forwarded message carries `X-WhelkMail-Forwarded` to prevent loops.
+Forwarding is an action of a filter. The cron endpoint evaluates filters for new messages in every folder and applies their labels; only matching inbox messages are forwarded to the filter recipients. The original EML is attached, and the forwarded message carries `X-WhelkMail-Forwarded` to prevent loops.
 
 Provider cleanup only runs when `archive_imap_bodies` and `delete_after_archive` are both enabled and the message is archived. The message is copied to the provider Trash and then removed from the source folder; the archived copy is preserved.
 

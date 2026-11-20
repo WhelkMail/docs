@@ -85,7 +85,7 @@ CI runs the same four steps on every push to `main` and every pull request, plus
 
 ## Releases
 
-The version lives in two places that a test keeps in step: `package.json` and `APP_VERSION` in `shared/version.ts`.
+The version lives in `package.json` (mirrored in `package-lock.json`) and `APP_VERSION` in `shared/version.ts`; a test keeps the two source values in step.
 
 1. Bump both to the new semantic version.
 2. Run the four checks above, then publish to the public repository.

@@ -68,14 +68,14 @@ worker/wrangler.toml.example  cron worker template (the real file is gitignored)
 | D1 (`DB`) | Accounts, settings, mirrored IMAP metadata, relay messages, short-lived body cache |
 | R2 (`BUCKET`, optional) | Optional long-term archive and relay sent/draft storage |
 | Google Drive (optional) | Alternative archive and relay sent/draft storage |
-| Cron worker (`worker/`) | Web Push, automatic sync, forwarding and provider cleanup every 5 minutes |
+| Cron worker (`worker/`) | Web Push, automatic sync (per-account interval), forwarding and provider cleanup; wakes every minute |
 
 ## Design choices
 
 - **Provider-first by default.** Messages, sent copies, drafts and attachments stay on the mail provider. Local copies are caches or opt-in archives.
 - **No IMAP IDLE.** Workers cannot hold a long-lived connection across requests, so metadata is mirrored into D1 and refreshed in bounded chunks.
 - **One shared app password.** WhelkMail is a personal / small-team tool, not a multi-tenant service.
-- **One unified taxonomy.** Labels, filters, contacts and signatures are shared across accounts.
+- **One unified taxonomy.** Labels, contacts and signatures are shared across accounts. Filters are global by default but can be scoped to one account; the automatic account label is one of these scoped filters.
 
 ## Related
 

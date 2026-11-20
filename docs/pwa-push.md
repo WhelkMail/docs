@@ -13,7 +13,7 @@ Web Push works in three parts:
 
 1. The client asks for browser permission, registers the service worker and subscribes with the VAPID public key.
 2. `push_subscriptions` and `push_prefs` persist the subscription and per-account/folder preferences.
-3. The `worker/` cron Worker runs every 5 minutes and calls `POST /api/cron/notifications` with `CRON_SECRET`. That endpoint syncs the selected folders, detects new UIDs and sends encrypted Web Push messages with VAPID.
+3. The `worker/` cron Worker wakes up every minute and calls `POST /api/cron/notifications` with `CRON_SECRET`. That endpoint syncs the selected folders when the account's interval is due, detects new UIDs and sends encrypted Web Push messages with VAPID.
 
 ## Setup
 
@@ -48,12 +48,14 @@ The worker needs `APP_URL` and the same `CRON_SECRET` shared with the Pages app.
 
 ## What the cron worker does
 
-Every 5 minutes, in the same run, it:
+Every minute, in the same run, it:
 
 - sends Web Push notifications for new messages;
-- applies automatic forwarding rules;
+- applies filter labels in every folder and forwards matching inbox messages;
 - runs the optional provider cleanup;
-- advances the per-account automatic background sync.
+- advances the per-account automatic background sync, once each account's interval has elapsed.
+
+The worker template uses `crons = ["* * * * *"]`. On Workers Free, use `["*/5 * * * *"]` instead: the 1 and 2 minute intervals are not usable on that plan.
 
 Enable notifications from **Settings → Push notifications**, background sync per account in Settings, and forwarding/deletion in the account/filter sections.
 

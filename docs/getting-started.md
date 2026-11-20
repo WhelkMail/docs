@@ -69,6 +69,7 @@ Open `http://localhost:8788` and sign in with `APP_PASSWORD`. The Functions prox
    - Pick a provider preset or enter IMAP/SMTP hosts, ports and security manually.
    - Choose OAuth where supported, or enter a password / app password.
    - Use **Test connection** in Settings.
+   - Optionally choose an automatic label: the label is created (or reused) and becomes an editable match-all filter that applies to every folder of the account.
 5. For a send-only domain:
    - Select the relay provider and paste its API key.
    - Choose where sent copies and drafts go: **Google Drive**, **R2** (only if the `BUCKET` binding exists) or **another account's mailbox**.

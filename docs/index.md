@@ -51,15 +51,15 @@ Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a fam
 ### Organization
 
 - Gmail-style labels shared across all accounts.
-- Per-account incoming labels applied automatically.
+- Per-account automatic labels, stored as editable match-all filters.
 - Contacts with search, edit, CSV import/export and recipient autocomplete.
 - Signatures: one shared signature or a different signature per account.
 
 ### Automation
 
-- Gmail-style filters shared across accounts: match From/To/Subject/words/attachments and apply labels and/or forward the original EML.
+- Gmail-style filters that target every account or a single one: match From/To/Subject/words/attachments, apply labels in every folder and/or forward incoming mail.
 - Incremental, resumable IMAP metadata sync into D1.
-- Optional background sync through the cron worker every 5 minutes.
+- Optional background sync through the cron worker, with a per-account interval (1 to 30 minutes).
 - Anti-loop forwarding headers, per-filter forward logs and deletion logs.
 
 ## Explore the documentation

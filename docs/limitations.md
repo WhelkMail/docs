@@ -9,7 +9,7 @@ WhelkMail is a client, not a mail server. These are the deliberate boundaries an
 
 ## Synchronization and search
 
-- No IMAP IDLE. Folder lists are served from the D1 mirror and a background sync refreshes new mail and flags. While a sync is in progress, the client polls the lightweight sync status with backoff and refreshes the list when new UIDs, backfill progress or the folder state change. Sync can also be started manually from Settings and runs every 5 minutes for accounts with automatic sync enabled (new IMAP accounts enable it by default).
+- No IMAP IDLE. Folder lists are served from the D1 mirror and a background sync refreshes new mail and flags. While a sync is in progress, the client polls the lightweight sync status with backoff and refreshes the list when new UIDs, backfill progress or the folder state change. Sync can also be started manually from Settings. The cron worker wakes up every minute and syncs each account with automatic sync enabled at its own interval (1, 2, 5, 10, 15 or 30 minutes; new IMAP accounts enable it by default).
 - The first open of an account bootstraps the newest messages from the provider; afterwards the folder list comes from D1. Sync uses UIDNEXT and bounded backfill windows instead of scanning every UID on each run.
 - Search runs against the D1 mirror across Inbox, Sent, Drafts and Spam, with an optional per-folder scope, and also matches contacts. Matching is a case-insensitive substring test (`LIKE`), not a full-text index: no stemming and no fuzzy matching.
 - IMAP bodies are indexed progressively (a few per sync chunk, plus every message you open), so a search matches body text only for messages that have been indexed so far; the rest still match sender, recipients and subject.
@@ -21,7 +21,7 @@ WhelkMail is a client, not a mail server. These are the deliberate boundaries an
 - Recent message bodies (up to 512 KB) are cached in D1 for up to 3 days; larger messages and attachments are re-read from the provider unless a long-term archive is configured. Inline `cid:` images are embedded in the detail response.
 - A label view uses the D1 mirror when available and falls back to fetching the labeled UIDs from the provider.
 - Mirrored IMAP metadata is kept indefinitely by default. Settings → Appearance can limit it to a retention window: older messages are removed from the D1 mirror (never from the provider, and never drafts), together with their label assignments. Pruned messages disappear from lists, search and label views; only a direct message link still opens one. **Download metadata again** clears the sync cursors so the mirror is rebuilt from the provider, but their labels are not restored. The archive copy in R2/Drive is left untouched.
-- Filters run when the inbox is loaded and when a sync ingests new inbox messages. Matching uses From/To/Subject/snippet, not the full message body.
+- Filters run whenever a folder is loaded and when a sync ingests new messages, in every folder. Matching uses From/To/Subject/snippet, not the full message body. Forwarding matches are taken from the inbox only.
 - Forwarding and provider deletion run from the cron worker, so they require the same setup as Web Push. They only act on new incoming messages detected after the initial sync.
 
 ## Sending and addresses

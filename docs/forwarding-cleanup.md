@@ -11,7 +11,7 @@ Both features are executed by the cron worker, so they share the same setup as W
 
 Forwarding is a filter action: a filter can apply labels, forward to one or more recipients, or both, like Gmail.
 
-- The cron endpoint processes messages above the previous inbox `max_uid`, evaluates enabled filters and the account incoming label, then forwards messages matched by a filter with `forward_to_json`.
+- The cron endpoint processes new messages above each folder's previous `max_uid`, evaluates enabled filters and the account-scoped automatic label, and applies their labels in every folder. Only matching inbox messages are forwarded when `forward_to_json` is set.
 - The forwarded message is built from the original EML, attached as `message/rfc822`, and stamped with `X-WhelkMail-Forwarded`; messages carrying that header are skipped to prevent loops.
 - `forward_log` has a unique `(filter_id, message_id)` key so a message is forwarded once per filter.
 - Forwarding only acts on new incoming messages detected after the initial sync.

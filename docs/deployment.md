@@ -196,7 +196,7 @@ npm run cron:deploy
 
 `npm run cron:deploy` creates the file from the template when it is missing and stops with a clear error while `APP_URL` is still empty or a placeholder.
 
-The worker runs every 5 minutes and calls `POST /api/cron/notifications` on the Pages app. In the same run it also applies automatic forwarding rules, the optional provider cleanup, and the per-account automatic background sync. Enable notifications from **Settings → Push notifications**, background sync per account in Settings, and forwarding/deletion in the account/filter sections.
+The worker wakes up every minute and calls `POST /api/cron/notifications` on the Pages app. In the same run it applies filter labels in every folder, forwards matching inbox messages, runs the optional provider cleanup, and advances each account's automatic background sync when its own interval has elapsed. The template uses `crons = ["* * * * *"]`; on Workers Free, `["*/5 * * * *"]` is recommended. Enable notifications from **Settings → Push notifications**, background sync per account in Settings, and forwarding/deletion in the account/filter sections.
 
 See [PWA and Web Push](pwa-push) for the full setup.
 
@@ -265,6 +265,12 @@ It records what it applied, so a rerun only continues with what is left. Relevan
 | `020_relay_sent_copy` | `accounts.sent_copy_account_id` (Drive/R2/IMAP destination of the sent copies) |
 | `022_reply_account` | `accounts.reply_account_id` (which relay answers for a forwarding mailbox) |
 | `026_relay_any_address` | `accounts.relay_any_address` (`Send from any address on this domain`) |
+
+Other recent migrations:
+
+| Migration | Adds |
+|---|---|
+| `030_account_label_filters` | `filters.auto_label`, the unique index for each account's automatic filter, and the conversion of existing `incoming_label_id` settings into editable filters (1.2.0) |
 
 For a database so old that it predates relay support entirely:
 
