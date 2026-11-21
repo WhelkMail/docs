@@ -271,6 +271,11 @@ Other recent migrations:
 | Migration | Adds |
 |---|---|
 | `030_account_label_filters` | `filters.auto_label`, the unique index for each account's automatic filter, and the conversion of existing `incoming_label_id` settings into editable filters (1.2.0) |
+| `031_recheck_aliases` | Marks rows with an empty alias list for one more read after the forwarding headers were added to the IMAP fetch (1.3.0) |
+| `032_contact_source` | `contacts.source` for the Other contacts badge (1.3.0) |
+| `033_auto_reply` | Per-account vacation-responder columns, `auto_reply_log` and its indexes (1.3.0) |
+| `034_rich_signature_autoreply` | `accounts.signature_html` and `accounts.auto_reply_body_html` (1.3.0) |
+| `035_contact_vcard_fields` | Structured contact fields: first/last name, company, job title, phone, address, website, birthday, additional emails/phones (1.3.0) |
 
 For a database so old that it predates relay support entirely:
 

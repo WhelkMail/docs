@@ -24,8 +24,9 @@ Important fields:
 - `sent_copy_account_id`: IMAP account that stores sent copies and drafts when `storage_driver` is `imap` (relay accounts only)
 - `reply_account_id`: account that sends the replies to messages received here. Used when a domain only forwards to this mailbox and sends through a relay account; cleared when that account is deleted
 - `relay_any_address`: relay accounts only. When set, replies may leave from any address on the account's exact domain. Off by default
-- `signature`: optional per-account signature, used only when `signature_mode` is `per_account`
-- `incoming_label_id`: optional shared label applied automatically to every message of this account. The labelling itself is a match-all filter scoped to the account (`filters.auto_label = 1`), so it stays editable in Settings -> Filters
+- `signature` / `signature_html`: optional per-account signature (plain text and rich HTML), used only when `signature_mode` is `per_account`
+- `auto_reply_enabled`, `auto_reply_subject`, `auto_reply_body`, `auto_reply_body_html`: per-account vacation responder, used when `auto_reply_mode` is `per_account`
+- `incoming_label_id`: optional shared label applied automatically to every message of this account. The labelling itself is a match-all filter scoped to the account (`filters.auto_label = 1`), so it stays editable in Settings -> Filters. For a send-only relay account the label follows the alias into the IMAP mailbox that receives the forwarded mail
 - `delete_after_archive`: opt-in provider cleanup; archived incoming messages are moved to the provider Trash
 - `auto_sync`: opt-in automatic background sync for Inbox, Sent, Drafts and Spam via the cron worker
 - `storage_driver`: `provider`, `drive`, `r2` or `imap` (relay accounts only)
@@ -54,9 +55,19 @@ Gmail-style automatic filters. `account_id` is empty for a filter that applies t
 
 Enabled filters are evaluated whenever a folder is listed and whenever sync ingests new messages, in every folder. Matching messages receive the labels in `message_labels`; forwarding is only triggered for matching inbox messages. Applying the enabled filters to mail already received walks `imap_messages` and then the local `messages` table, so relay sent copies and drafts are included too.
 
+Word criteria (`has_words` / `doesnt_have`) need the snippet, which is empty for header-only rows. They are skipped at ingest and re-evaluated after the body is indexed; `has_words` would otherwise never match new mail, and `doesnt_have` would match every new message. The list endpoint also re-applies the enabled filters to the visible messages, so a failed sync chunk or an older mirror catches up when the page is loaded. Label inserts are chunked to stay inside D1 batch limits.
+
+A relay account stores no incoming mail. Its scoped filter matches messages whose recipients or aliases contain the relay address, which is how an automatic label on a send-only account reaches the IMAP mailbox that received the forward.
+
 ## `contacts`
 
-Shared address book: `id`, `name`, `email`, `note`, `created_at`. A unique index on `lower(email)` prevents duplicates; creating a contact with an existing email updates the name/note instead. Contacts are not account-scoped. The UI supports search, create/edit/delete, CSV import/export, and autocomplete in To/Cc/Bcc.
+Shared address book stored in D1, not R2/Drive: `id`, `name` (display name), `email`, `note`, `source`, `first_name`, `last_name`, `company`, `job_title`, `phone`, `address`, `website`, `birthday`, `emails_json`, `phones_json`, `created_at`. `source` is `manual` or `auto` (Gmail-style Other contacts). `emails_json` and `phones_json` hold additional addresses/numbers. A unique index on `lower(email)` prevents duplicates; creating a contact with an existing email updates it instead. Contacts are not account-scoped.
+
+The UI supports search, create/edit/delete, CSV import/export, vCard import (3.0/4.0 auto-detected) and vCard export (3.0 by default, 4.0 optional). `POST /api/contacts/import` upserts up to 1.000 cards per request and the client chunks larger files.
+
+## `auto_reply_log`
+
+One row per replied message: `id`, `account_id`, `message_id`, `sender_email`, `status` (`pending`/`sent`/`error`), `error`, `created_at`. The unique index on `(account_id, message_id)` makes a retried sync chunk harmless; the sender index powers the 24-hour cooldown. The vacation responder is described in [Auto-reply](auto-reply).
 
 ## `imap_sync` and `imap_messages`
 
@@ -106,12 +117,14 @@ Provider cleanup only runs when `archive_imap_bodies` and `delete_after_archive`
 
 ## `app_settings`
 
-Key/value store for deployment-wide preferences: signatures (`default_signature`, `signature_mode`), remote images (`allow_remote_images`), retention (`metadata_retention_days`, `retention_stats`), 2FA material, and the release check (`update_check` cache, `update_notice_dismissed`).
+Key/value store for deployment-wide preferences: signatures (`default_signature`, `default_signature_html`, `signature_mode`), contacts autocomplete (`contact_auto_add`), vacation responder (`auto_reply_mode`, `auto_reply_enabled`, `auto_reply_subject`, `auto_reply_body`, `auto_reply_body_html`), remote images (`allow_remote_images`), retention (`metadata_retention_days`, `retention_stats`), 2FA material, and the release check (`update_check` cache, `update_notice_dismissed`).
 
 `signature_mode` is `shared` (default) or `per_account`:
 
-- `shared`: `default_signature` is used for every account and `accounts.signature` is ignored.
-- `per_account`: every account uses its own `accounts.signature`; an empty value means no signature.
+- `shared`: `default_signature` / `default_signature_html` are used for every account and `accounts.signature` is ignored.
+- `per_account`: every account uses its own `accounts.signature` / `accounts.signature_html`; an empty value means no signature.
+
+`auto_reply_mode` is `shared` (default) or `per_account` and is documented in [Auto-reply](auto-reply).
 
 ## Security tables
 

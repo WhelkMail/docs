@@ -17,7 +17,7 @@ WhelkMail is self-hosted: nobody can push an update into your deployment. This g
 
 1. **Get the code.** Update your copy of the repository to the release tag:
    - GitHub fork: open your fork and use **Sync fork → Update branch**, then check that your fork's `main` matches the upstream tag.
-   - Command line: `git fetch --tags && git checkout v1.2.3`.
+   - Command line: `git fetch --tags && git checkout v1.3.0`.
 2. **Deploy.** Either let Cloudflare Pages redeploy (it builds from the branch you pushed) or run it yourself:
 
    ```bash
@@ -37,7 +37,17 @@ WhelkMail is self-hosted: nobody can push an update into your deployment. This g
 
 ## Migrations in recent releases
 
-Release 1.2.0 adds `030_account_label_filters.sql`: it adds `filters.auto_label`, creates the unique index for each account's automatic filter and converts existing `accounts.incoming_label_id` settings into editable filters. Run `npm run db:migrate:remote` before deploying 1.2.0. Existing data is preserved.
+Release 1.3.0 adds `031_recheck_aliases.sql` through `035_contact_vcard_fields.sql`:
+
+- `031` marks rows with an empty alias list for one more read, so the fixed forwarding-header fetch can find `Delivered-To`, `X-Forwarded-For` and the other aliases.
+- `032` adds `contacts.source` for the Gmail-style Other contacts badge. The code also saves contacts without it, but the badge needs the column.
+- `033` adds the per-account vacation-responder columns, the `auto_reply_log` table and its indexes.
+- `034` adds `accounts.signature_html` and `accounts.auto_reply_body_html` for rich-text signatures and replies.
+- `035` adds the structured contact fields (first/last name, company, job title, phone, address, website, birthday, additional emails/phones).
+
+Run `npm run db:migrate:remote` before deploying 1.3.0. The installer applies the same migrations automatically. Existing data is preserved, and signatures/auto-reply bodies saved before 1.3.0 keep working as plain text.
+
+Release 1.2.0 added `030_account_label_filters.sql`: it adds `filters.auto_label`, creates the unique index for each account's automatic filter and converts existing `accounts.incoming_label_id` settings into editable filters.
 
 ## If something goes wrong
 

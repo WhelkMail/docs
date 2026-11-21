@@ -75,7 +75,9 @@ Relay credentials can also be entered per account in the UI and are encrypted at
 
 Some preferences are stored in the `app_settings` table instead of environment variables, and are edited from the UI:
 
-- `default_signature`, `signature_mode` — shared signature or one per account.
+- `default_signature`, `default_signature_html`, `signature_mode` — shared signature or one per account, plain text plus rich HTML.
+- `contact_auto_add` — Gmail-style Other contacts from sent recipients. On by default; `0` leaves the address book manual.
+- `auto_reply_mode`, `auto_reply_enabled`, `auto_reply_subject`, `auto_reply_body`, `auto_reply_body_html` — shared vacation responder. See [Auto-reply](auto-reply).
 - `allow_remote_images` — global default for remote images.
 - `metadata_retention_days`, `retention_stats` — metadata retention window and last cleanup.
 - TOTP/2FA material.
@@ -107,5 +109,11 @@ Google Drive, Google IMAP/SMTP and Microsoft OAuth each need an OAuth applicatio
 
 `signature_mode` is `shared` (default) or `per_account`:
 
-- `shared`: `default_signature` is used for every account and `accounts.signature` is ignored.
-- `per_account`: every account uses its own `accounts.signature`; an empty value means no signature.
+- `shared`: `default_signature` / `default_signature_html` are used for every account and `accounts.signature` is ignored.
+- `per_account`: every account uses its own `accounts.signature` / `accounts.signature_html`; an empty value means no signature.
+
+Signatures are edited with the rich-text composer. `signature_html` is the HTML part; `signature` remains the plain-text fallback. The composer's default rich/plain format is a per-device preference stored in the browser (`localStorage: mc_compose_rich`), not in D1.
+
+## Auto-reply
+
+The shared or per-account vacation responder is documented in [Auto-reply](auto-reply). It stores `auto_reply_*` keys in `app_settings` (shared) or the matching columns on `accounts` (per account).

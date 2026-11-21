@@ -26,6 +26,7 @@
     "collapsible": true,
     "children": [
       { "title": "Labels and filters", "path": "/labels-filters/" },
+      { "title": "Auto-reply", "path": "/auto-reply/" },
       { "title": "PWA and Web Push", "path": "/pwa-push/" },
       { "title": "Forwarding and cleanup", "path": "/forwarding-cleanup/" }
     ]

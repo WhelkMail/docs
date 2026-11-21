@@ -37,6 +37,7 @@ npm run preview
 │   ├── security.md             # Security model
 │   ├── relay-accounts.md       # Send-only domains and storage
 │   ├── labels-filters.md       # Labels, contacts, signatures, filters
+│   ├── auto-reply.md           # Shared or per-account vacation responder
 │   ├── pwa-push.md             # PWA, Web Push and release check
 │   ├── forwarding-cleanup.md   # Forwarding and provider cleanup
 │   ├── development.md          # Local workflow, migrations, tests

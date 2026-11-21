@@ -45,14 +45,19 @@ functions/                 Cloudflare Pages Functions
   _lib/
     imap/client.ts         IMAP client over cloudflare:sockets
     smtp/client.ts         SMTP client (PLAIN, LOGIN, XOAUTH2)
-    mail/                  auth helpers, folder lookup, drafts, loading
-    mime.ts                MIME builder
+    mail/                  auth helpers, folder lookup, drafts, loading, search text
+    mime.ts                MIME builder (text + HTML alternative)
+    filters.ts             filter matching, labels, relay alias scope
+    contacts.ts            contact rows/values, auto contacts, vCard field parsing
+    auto-reply.ts          vacation responder, cooldown and auto_reply_log
     storage/               Drive and R2 adapters
     relay/                 HTTP relay adapters
     microsoft/oauth.ts     Microsoft OAuth2 / XOAUTH2 token flow
-  api/                     HTTP endpoints
+  api/                     HTTP endpoints, including POST /api/contacts/import
 shared/                    Types, Zod schemas, provider presets, paging helpers
 src/                       React application
+  components/RichTextEditor.tsx  contentEditable composer/toolbar
+  lib/vcard.ts             vCard 3.0/4.0 parser and serializer
 db/schema.sql              D1 schema for a fresh install
 db/migrations/             Additive upgrades for existing databases
 wrangler.toml.example      local Pages/D1 configuration template
@@ -68,7 +73,7 @@ worker/wrangler.toml.example  cron worker template (the real file is gitignored)
 | D1 (`DB`) | Accounts, settings, mirrored IMAP metadata, relay messages, short-lived body cache |
 | R2 (`BUCKET`, optional) | Optional long-term archive and relay sent/draft storage |
 | Google Drive (optional) | Alternative archive and relay sent/draft storage |
-| Cron worker (`worker/`) | Web Push, automatic sync (per-account interval), forwarding and provider cleanup; wakes every minute |
+| Cron worker (`worker/`) | Web Push, automatic sync (per-account interval), forwarding, vacation responder and provider cleanup; wakes every minute |
 
 ## Design choices
 

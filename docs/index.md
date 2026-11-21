@@ -36,6 +36,7 @@ Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a fam
 - Inbox, Sent, Drafts and Spam with autosave and reopenable drafts.
 - Gmail-style conversations using RFC `References` when available and a subject fallback otherwise.
 - HTML bodies in a sandboxed frame with optional remote images and attachment indicators from `BODYSTRUCTURE`.
+- Rich-text composer with bold, lists, links and quotes; the default rich/plain format is saved per device, and Enter in a recipient never sends the message.
 - Installable PWA, mobile drawer layout and Web Push notifications with per-account/folder preferences.
 - English by default, Italian available; the dictionary is extensible.
 
@@ -51,13 +52,15 @@ Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a fam
 ### Organization
 
 - Gmail-style labels shared across all accounts.
-- Per-account automatic labels, stored as editable match-all filters.
-- Contacts with search, edit, CSV import/export and recipient autocomplete.
-- Signatures: one shared signature or a different signature per account.
+- Per-account automatic labels, stored as editable match-all filters. A relay account's label follows its alias into the IMAP mailbox that receives the forwarded mail.
+- Structured contacts with name, company, job title, phone, address, website, birthday, extra emails/phones and notes; vCard 3.0/4.0 import with automatic version detection, vCard 3.0 default export and 4.0 optional.
+- Gmail-style **Other contacts** for autocomplete, with an explicit Add to contacts entry while typing and silent addition when replying.
+- Signatures: one shared signature or a different signature per account, with rich-text formatting.
 
 ### Automation
 
-- Gmail-style filters that target every account or a single one: match From/To/Subject/words/attachments, apply labels in every folder and/or forward incoming mail.
+- Gmail-style filters that target every account or a single one: match From/To/Subject/words/attachments, apply labels in every folder and/or forward incoming mail. Word criteria are re-evaluated once the body is indexed, and forwarded aliases are read from the real headers.
+- Vacation responder: one shared auto-reply or a different one per account, with rich-text body and anti-loop rules.
 - Incremental, resumable IMAP metadata sync into D1.
 - Optional background sync through the cron worker, with a per-account interval (1 to 30 minutes).
 - Anti-loop forwarding headers, per-filter forward logs and deletion logs.
@@ -72,7 +75,8 @@ Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a fam
 - [Data model](data-model) — every D1 table and what it stores.
 - [Security](security) — authentication, sessions, encryption and hardening.
 - [Relay accounts](relay-accounts) — send-only domains and storage destinations.
-- [Labels and filters](labels-filters) — shared taxonomy and automatic rules.
+- [Labels and filters](labels-filters) — shared taxonomy, automatic rules, contacts and signatures.
+- [Auto-reply](auto-reply) — shared or per-account vacation responder.
 - [PWA and Web Push](pwa-push) — installable app and notifications.
 - [Forwarding and cleanup](forwarding-cleanup) — filter forwarding and provider deletion.
 - [Development](development) — local workflow, database migrations and tests.

@@ -21,8 +21,16 @@ WhelkMail is a client, not a mail server. These are the deliberate boundaries an
 - Recent message bodies (up to 512 KB) are cached in D1 for up to 3 days; larger messages and attachments are re-read from the provider unless a long-term archive is configured. Inline `cid:` images are embedded in the detail response.
 - A label view uses the D1 mirror when available and falls back to fetching the labeled UIDs from the provider.
 - Mirrored IMAP metadata is kept indefinitely by default. Settings → Appearance can limit it to a retention window: older messages are removed from the D1 mirror (never from the provider, and never drafts), together with their label assignments. Pruned messages disappear from lists, search and label views; only a direct message link still opens one. **Download metadata again** clears the sync cursors so the mirror is rebuilt from the provider, but their labels are not restored. The archive copy in R2/Drive is left untouched.
-- Filters run whenever a folder is loaded and when a sync ingests new messages, in every folder. Matching uses From/To/Subject/snippet, not the full message body. Forwarding matches are taken from the inbox only.
-- Forwarding and provider deletion run from the cron worker, so they require the same setup as Web Push. They only act on new incoming messages detected after the initial sync.
+- Filters run whenever a folder is loaded and when a sync ingests new messages, in every folder. Matching uses From/To/Subject/snippet, not the full message body. Word criteria are skipped until the snippet is known and re-evaluated after the body is indexed; `To` matching also reads forwarding headers (`Delivered-To`, `X-Original-To`, `X-Forwarded-For`, `Received ... for`). Forwarding matches are taken from the inbox only.
+- Forwarding, the vacation responder and provider deletion run from the cron worker, so they require the same setup as Web Push. The responder also runs when a client syncs new inbox mail, but nobody answers while the app is closed. They only act on new incoming messages detected after the initial sync.
+
+## Contacts, compose and auto-reply
+
+- The contact address is stored as one formatted string. vCard `ADR` components are joined on import and exported in the street component, so a round-trip preserves the text but not the individual city/region/postal fields. Photos, categories and custom vCard properties are not stored.
+- vCard import accepts 3.0 and 4.0 (and tolerates 2.1 basics); quoted-printable and uncommon encodings are not decoded. Only cards with a valid email are imported.
+- The rich-text composer is a `contentEditable` editor with a small allow-list (bold, italic, underline, strike, lists, blockquote, links). It does not support images, tables, font colours or sizes; pasted HTML is sanitized. Drafts keep both HTML and plain text.
+- The rich/plain default is a per-device preference (`localStorage`), not a server setting. Enter in a recipient commits the address or picks the highlighted suggestion; only a real click on **Send** sends.
+- Auto-reply is heuristic: no-reply senders and automated subjects are detected by patterns, not by a full `Auto-Submitted`/`Precedence` header analysis. A responder that ignores the anti-loop headers can still cause one exchange until the 24-hour sender cooldown. Mail older than seven days and the initial sync are ignored.
 
 ## Sending and addresses
 

@@ -5,7 +5,7 @@ description: Installable app, notifications, the cron worker and the in-app rele
 
 # PWA and Web Push
 
-`public/manifest.webmanifest` and `public/sw.js` make the app installable. The service worker caches the app shell and static assets, never `/api/`, and handles `push` and `notificationclick`.
+`public/manifest.webmanifest` and `public/sw.js` make the app installable. The service worker caches the app shell and static assets, never `/api/`, and handles `push` and `notificationclick`. The navigation request revalidates the shell with the network, a new worker reloads the page once for an already-open client, and labels/filters plus the visible list are refreshed when a PWA returns to the foreground.
 
 ## How Web Push works
 
@@ -51,13 +51,13 @@ The worker needs `APP_URL` and the same `CRON_SECRET` shared with the Pages app.
 Every minute, in the same run, it:
 
 - sends Web Push notifications for new messages;
-- applies filter labels in every folder and forwards matching inbox messages;
+- applies filter labels in every folder, forwards matching inbox messages and runs the vacation responder;
 - runs the optional provider cleanup;
 - advances the per-account automatic background sync, once each account's interval has elapsed.
 
 The worker template uses `crons = ["* * * * *"]`. On Workers Free, use `["*/5 * * * *"]` instead: the 1 and 2 minute intervals are not usable on that plan.
 
-Enable notifications from **Settings → Push notifications**, background sync per account in Settings, and forwarding/deletion in the account/filter sections.
+Enable notifications from **Settings -> Push notifications**, background sync and the vacation responder in Settings, and forwarding/deletion in the account/filter sections.
 
 ## PWA assets
 

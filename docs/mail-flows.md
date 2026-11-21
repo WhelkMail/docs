@@ -41,11 +41,12 @@ This page walks through the main request flows between the React client, Pages F
 ## Send
 
 1. `POST /api/messages/send`
-2. The server builds a complete MIME message.
+2. The server builds a complete MIME message from `text` and, when supplied, the rich-text `html` part.
 3. **IMAP account:** authenticate and send through the account's own SMTP.
 4. If `auto_saves_sent` is false, the same MIME is appended to the provider's Sent folder (`\Sent`, fallback `Sent`).
 5. If `draftId` is present, the original draft is deleted.
-6. **Relay account:** store the `.eml` on the destination chosen in `storage_driver`, send through the selected HTTP relay, then record metadata in D1.
+6. Once the send is accepted, the recipients (To/Cc/Bcc) are added to the Gmail-style **Other contacts** unless `contact_auto_add` is `0`. This is what makes a reply from an unknown sender add it silently.
+7. **Relay account:** store the `.eml` on the destination chosen in `storage_driver`, send through the selected HTTP relay, then record metadata in D1.
    - `drive` / `r2`: the object is written before the send, so a failed send still has its copy.
    - `imap`: nothing is written to object storage; the same MIME is appended to the Sent folder of the account in `sent_copy_account_id` after the relay accepts the message, `storage_key` keeps a pointer (`imap:<account>:<folder>:<uid>`) and a Sent sync is queued for that account. If the append fails the message is still sent and recorded: when the deployment has any object storage (Drive connected or the `BUCKET` binding) the MIME is written there as a rescue copy and `messages.storage_driver` records that driver, so attachments and the raw view keep working; without object storage only the D1 body remains and the response carries a warning.
 
@@ -69,6 +70,14 @@ This page walks through the main request flows between the React client, Pages F
    The composer shows the address as its own entry in the From list, so it can be switched back before sending. `POST /api/messages/send` takes it as `fromEmail` and refuses (`from_address_not_allowed`) anything that isn't the account's own address or, with the setting on, another address on its exact domain (no subdomains). The From in the MIME, the relay call and the stored Sent copy all use it. A draft keeps only the account, so a reopened draft sends from the account's own address.
 
 3. Everything else is the normal send flow, so the reply leaves through the chosen account's own SMTP/relay and its copy follows that account's destination. Addresses of both accounts are excluded from To/Cc to avoid replying to yourself.
+
+## Auto-reply
+
+1. New inbox messages are evaluated by the sync path and by the notification cron, so a client sync and a background run are both covered.
+2. The responder resolves its configuration from `auto_reply_mode`: shared `app_settings` or the receiving account's `auto_reply_*` columns. Relay accounts are not considered.
+3. It skips non-inbox mail, own addresses, no-reply/postmaster senders, automated subjects and messages older than seven days. A unique `auto_reply_log` row on `(account_id, message_id)` prevents a retried chunk from replying twice; a sender gets at most one reply every 24 hours.
+4. The reply is sent through the receiving account's SMTP/relay with `Auto-Submitted: auto-replied` and `X-Auto-Response-Suppress: All`. The body is HTML when `body_html` exists, with the plain text as fallback. Failures are recorded in `auto_reply_log.status`.
+5. The first sync of an account does not reply to the whole mailbox. See [Auto-reply](auto-reply) for the full rules.
 
 ## Conversations
 
@@ -94,6 +103,7 @@ This page walks through the main request flows between the React client, Pages F
   - There is no automatic archive on Drive/R2 in this mode. If the target account is missing or not connected, saving fails with `sent_copy_target_not_connected`. When the APPEND itself fails and object storage exists, the draft is rescued there instead of being lost; with no object storage the save fails with `draft_save_failed`.
   - The mailbox copy is mirrored as an ordinary draft of the target account and filtered out of the Drafts list and draft searches, so the draft is listed once, under the relay account that owns it.
 - Autosave runs 5 seconds after the last change and every 30 seconds while changes remain. Closing the composer saves pending changes first; if the draft cannot be saved the user is asked whether to discard it.
+- Rich-text drafts keep `html` next to `text` in the MIME and in the D1 metadata, so reopening a draft restores formatting and text-only clients still read the plain fallback.
 - An explicit **Save draft** closes the composer and opens the Drafts folder.
 
 ## Where a send-only account keeps its copies
@@ -112,4 +122,5 @@ Switching back to `drive` or `r2` clears `sent_copy_account_id`. Copies appended
 
 - [Data model](data-model)
 - [Relay accounts](relay-accounts)
+- [Auto-reply](auto-reply)
 - [Known limitations](limitations)
