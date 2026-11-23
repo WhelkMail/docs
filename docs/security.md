@@ -48,7 +48,7 @@ CSP, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Perm
 
 - `.dev.vars`, `.env` and `.wrangler` are gitignored.
 - Production secrets belong in the target's secret store: Workers/Pages project settings, or `deploy/docker/.env` on Docker.
-- The public repository must never contain `wrangler.toml`, `worker/wrangler.toml`, `.dev.vars`, `.env*` or any secret. The tracked `wrangler.jsonc` keeps a placeholder D1 id; do not commit your real id.
+- The public repository must never contain `wrangler.toml`, `worker/wrangler.toml`, `.dev.vars`, `.env*` or any secret. The tracked `wrangler.jsonc` has no `database_id`; if you add your own id locally, do not commit it.
 - On Docker, protect the data volume (`/data`) and the `.env` file like any other credential store.
 
 ## No multi-tenancy

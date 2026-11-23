@@ -28,7 +28,7 @@ npm install
 npm run db:init:local
 ```
 
-The repository tracks `wrangler.jsonc` with a placeholder D1 ID; for local development that is fine. For a real deployment, create your own database and replace `database_id`, or configure the `DB` binding in the Pages dashboard. Remove any legacy local `wrangler.toml`: Pages does not support custom configuration paths and the public repository must keep the placeholder.
+The repository tracks `wrangler.jsonc` without a `database_id`, so local dev and the Deploy to Cloudflare flow can provision D1 automatically. For a real CLI deployment, create your own database with `npx wrangler d1 create mail-client --binding DB --update-config`, or configure the `DB` binding in the Pages dashboard. Remove any legacy local `wrangler.toml`: Pages does not support custom configuration paths.
 
 If you already have a local database created before labels/signatures, run `npm run db:migrate:local`. If you only need the security tables (sessions, rate limiting, OAuth state), start from that migration with `node scripts/migrate.mjs local --from=012`; existing sessions are invalidated.
 

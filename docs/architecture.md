@@ -64,7 +64,7 @@ src/                       React application
   lib/vcard.ts             vCard 3.0/4.0 parser and serializer
 db/schema.sql              D1/SQLite schema for a fresh install
 db/migrations/             Additive upgrades for existing databases
-wrangler.jsonc             shared Workers/Pages configuration (placeholder D1 id)
+wrangler.jsonc             shared Workers/Pages configuration (D1 auto-provisioned)
 worker/wrangler.toml.example  Pages cron worker template (the real file is gitignored)
 ```
 

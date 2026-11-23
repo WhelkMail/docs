@@ -25,8 +25,13 @@ the optional OAuth, relay and VAPID values described in
 - **Deploy to Cloudflare (Workers, default):** use the
   [Deploy to Cloudflare button](https://deploy.workers.cloudflare.com/?url=https://github.com/WhelkMail/WhelkMail).
   Cloudflare clones the repository into your GitHub/GitLab account, provisions
-  D1 and R2, updates `wrangler.jsonc`, configures Workers Builds and deploys.
-  Enter the required secrets during setup or in the dashboard.
+  D1 (and R2 if enabled), writes the resource ids into `wrangler.jsonc`,
+  configures Workers Builds and deploys. The setup page asks for
+  `APP_PASSWORD`, `TOKEN_ENC_KEY` and `CRON_SECRET` from `.dev.vars.example`.
+  Custom Worker names are supported; the chosen name is passed through
+  `WRANGLER_CI_OVERRIDE_NAME`.
+  After the first deploy, clone the new repository and run
+  `npm install && npm run db:init:workers:remote` once to create the schema.
 - **Installer (Pages, beta):** the
   [WhelkMail Installer](https://github.com/WhelkMail/installer) creates the D1
   database and Pages project, stores the secrets, applies the schema and
@@ -41,17 +46,22 @@ the optional OAuth, relay and VAPID values described in
 
 ### 1.1 Create the D1 database
 
+The Deploy to Cloudflare button provisions D1 from the binding in
+`wrangler.jsonc` and writes its id into the new repository. For a CLI deployment:
+
 ```bash
-npx wrangler d1 create mail-client
+npx wrangler d1 create mail-client --binding DB --update-config
 ```
 
-The repository tracks `wrangler.jsonc` with a zero-UUID placeholder. Replace
-`database_id` with the value printed by the command. If you publish a fork, keep
-the placeholder in commits; the Deploy to Cloudflare flow and the Pages
-dashboard bind your own resources.
+`wrangler.jsonc` intentionally has no `database_id`: this keeps the public
+repository generic and lets both the Deploy flow and `wrangler deploy`
+auto-provision the database. If you add an existing id locally, keep it out of
+commits.
 
 The D1 database keeps the legacy name `mail-client` so existing data continues
-to work. Only the Worker/Pages project is named `whelkmail`.
+to work. Only the Worker/Pages project is named `whelkmail`. A custom Worker
+name is passed through `WRANGLER_CI_OVERRIDE_NAME` by the Deploy flow; for CLI
+use `WORKER_NAME=my-worker npm run deploy`.
 
 ### 1.2 Apply the schema
 
@@ -134,9 +144,8 @@ remains the source of truth.
 
 ### 2.1 New Pages project
 
-1. Create the database with `npx wrangler d1 create mail-client`; paste the id
-   into `wrangler.jsonc` for local CLI work, or set the `DB` binding in the
-   dashboard.
+1. Create the database with `npx wrangler d1 create mail-client --binding DB
+   --update-config` for local CLI work, or set the `DB` binding in the dashboard.
 2. Pages -> **Create -> Connect to Git**; build command `npm run build`, output
    `dist`, `NODE_VERSION=22` (or newer).
 3. Add the `DB` binding (and optional `BUCKET`) in **Settings -> Bindings**.
@@ -170,7 +179,8 @@ npm run deploy:pages
 ```
 
 With GitHub deployments, configure the D1 binding and secrets in the dashboard;
-the public `wrangler.jsonc` keeps the placeholder.
+the public `wrangler.jsonc` has no `database_id`, so the Deploy flow and
+`wrangler deploy` can provision the database.
 
 ---
 

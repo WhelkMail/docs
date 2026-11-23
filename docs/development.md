@@ -25,10 +25,10 @@ npm install
 npm run db:init:local   # fresh local database: schema + migration baseline
 ```
 
-The tracked `wrangler.jsonc` carries the shared Workers/Pages configuration with
-a placeholder D1 id. Remove any legacy local `wrangler.toml`: Pages does not
-support custom configuration paths and the public repository must keep the
-placeholder.
+The tracked `wrangler.jsonc` carries the shared Workers/Pages configuration
+without a `database_id`, so the Deploy to Cloudflare flow and `wrangler deploy`
+can provision D1. Remove any legacy local `wrangler.toml`: Pages does not
+support custom configuration paths.
 
 Create `.dev.vars` (gitignored) with at least:
 
@@ -132,7 +132,7 @@ sh scripts/publish-public.sh                  # publish main
 SOURCE=feature-x sh scripts/publish-public.sh  # publish another branch
 ```
 
-The script refuses to run if a personal config file is tracked in `SOURCE`: `wrangler.toml`, `worker/wrangler.toml`, `.dev.vars` and its variants, `.env` and `.env.*` with any number of suffixes. The `*.example` templates are allowed and expected. `wrangler.jsonc` is tracked on purpose with a placeholder D1 id so the Deploy to Cloudflare button and forks stay generic.
+The script refuses to run if a personal config file is tracked in `SOURCE`: `wrangler.toml`, `worker/wrangler.toml`, `.dev.vars` and its variants, `.env` and `.env.*` with any number of suffixes. The `*.example` templates are allowed and expected, including `.dev.vars.example` (used by the Deploy to Cloudflare setup page). `wrangler.jsonc` is tracked without a `database_id` so the Deploy flow and forks stay generic.
 
 It then pushes `SOURCE` to `public/main` as a **fast-forward**. If `public/main` has commits that are missing locally the script stops and asks for a merge first:
 
@@ -145,7 +145,7 @@ Before publishing, make sure the public tree is installable:
 
 ```bash
 git ls-files | grep -E 'wrangler\.toml$|\.dev\.vars' && echo "unexpected config"
-grep -q '"database_id": "00000000-0000-0000-0000-000000000000"' wrangler.jsonc
+! grep -q '"database_id"' wrangler.jsonc
 npm ci && npm run typecheck && npm run test && npm run build && npm run build:node
 ```
 

@@ -23,7 +23,7 @@ description: Common WhelkMail symptoms, likely causes and fixes for accounts, de
 
 | Symptom | Cause / fix |
 |---|---|
-| `database_id` placeholder error | Replace the placeholder in `wrangler.jsonc` for local CLI use, or set the `DB` binding in the dashboard. Docker uses SQLite and does not read this value |
+| `database_id` missing or not found | The Deploy to Cloudflare flow provisions D1 from the binding and writes its id. For CLI use `npx wrangler d1 create mail-client --binding DB --update-config`, or set the `DB` binding in the dashboard. Docker uses SQLite and does not read this value |
 | `D1_ERROR: no such table: accounts` | Apply the schema and record the baseline: `npm run db:init:remote` |
 | `no such table: accounts` on Docker | The container could not write `/data`; check the volume permissions and `DB_PATH`, then restart |
 | `D1_ERROR: no such table: labels` / `message_labels` / `app_settings` / `filters` / `contacts` / `auto_reply_log` / `imap_sync` / `imap_messages` / `push_subscriptions` / `push_prefs` / `forward_log` / `deletion_log` / `sessions` / `login_attempts` / `oauth_states` / `imap_body_cache` / `imap_sync_locks` / `schema_migrations` | Run `npm run db:migrate:remote`: migrations already recorded are skipped |
