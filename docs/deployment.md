@@ -26,10 +26,11 @@ the optional OAuth, relay and VAPID values described in
   [Deploy to Cloudflare button](https://deploy.workers.cloudflare.com/?url=https://github.com/WhelkMail/WhelkMail).
   Cloudflare clones the repository into your GitHub/GitLab account, provisions
   D1 (and R2 if enabled), writes the resource ids into `wrangler.jsonc`,
-  configures Workers Builds and deploys. The setup page asks for
-  `APP_PASSWORD`, `TOKEN_ENC_KEY` and `CRON_SECRET` from `.dev.vars.example`.
-  Custom Worker names are supported; the chosen name is passed through
-  `WRANGLER_CI_OVERRIDE_NAME`.
+  configures Workers Builds and deploys. The setup page asks only for the two
+  required secrets in `.dev.vars.example` (`APP_PASSWORD`, `TOKEN_ENC_KEY`);
+  `CRON_SECRET` and the OAuth/relay/VAPID values are commented out and can be
+  added later. Custom Worker names are supported; the chosen name is passed
+  through `WRANGLER_CI_OVERRIDE_NAME`.
   After the first deploy, clone the new repository and run
   `npm install && npm run db:init:workers:remote` once to create the schema.
 - **Installer (Pages, beta):** the
@@ -80,7 +81,7 @@ npm run db:migrate:workers:remote
 ```bash
 npx wrangler secret put APP_PASSWORD
 npx wrangler secret put TOKEN_ENC_KEY
-npx wrangler secret put CRON_SECRET
+npx wrangler secret put CRON_SECRET   # optional: notifications/background sync
 ```
 
 Generate `TOKEN_ENC_KEY` with:
