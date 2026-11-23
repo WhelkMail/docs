@@ -23,16 +23,18 @@ description: Common WhelkMail symptoms, likely causes and fixes for accounts, de
 
 | Symptom | Cause / fix |
 |---|---|
-| `database_id` placeholder error | Replace the placeholder in the local `wrangler.toml`, or set the `DB` binding in the Pages dashboard |
+| `database_id` placeholder error | Replace the placeholder in `wrangler.jsonc` for local CLI use, or set the `DB` binding in the dashboard. Docker uses SQLite and does not read this value |
 | `D1_ERROR: no such table: accounts` | Apply the schema and record the baseline: `npm run db:init:remote` |
+| `no such table: accounts` on Docker | The container could not write `/data`; check the volume permissions and `DB_PATH`, then restart |
 | `D1_ERROR: no such table: labels` / `message_labels` / `app_settings` / `filters` / `contacts` / `auto_reply_log` / `imap_sync` / `imap_messages` / `push_subscriptions` / `push_prefs` / `forward_log` / `deletion_log` / `sessions` / `login_attempts` / `oauth_states` / `imap_body_cache` / `imap_sync_locks` / `schema_migrations` | Run `npm run db:migrate:remote`: migrations already recorded are skipped |
-| `D1_ERROR: no such column: archive_imap_bodies` / `archive_key` / `imap_archive_driver` / `auto_sync` / `delete_after_archive` / `forward_to_json` / `drafts_folder` / `spam_folder` / `source` / `signature_html` / `auto_reply_*` / `first_name` / `last_name` / `emails_json` / `phones_json` | Run `npm run db:migrate:remote`, or apply the missing migrations in order (031-035 for 1.3.0) |
-| 401 loop after login | `APP_PASSWORD` mismatch, cookie blocked, site not served over HTTPS, or the `sessions` table missing (run `node scripts/migrate.mjs remote --from=012`) |
-| 500 on every API call | Missing `DB` binding, missing secrets, or missing security tables |
+| `D1_ERROR: no such column: archive_imap_bodies` / `archive_key` / `imap_archive_driver` / `auto_sync` / `delete_after_archive` / `forward_to_json` / `drafts_folder` / `spam_folder` / `source` / `signature_html` / `auto_reply_*` / `first_name` / `last_name` / `emails_json` / `phones_json` | Run `npm run db:migrate:remote`, or apply the missing migrations in order (031-035 for 1.3.0 and newer) |
+| 401 loop after login | `APP_PASSWORD` mismatch, cookie blocked, site not served over HTTPS, or the `sessions` table missing (run `node scripts/migrate.mjs remote --from=012`). On Docker, set `PUBLIC_ORIGIN` to the public HTTPS URL |
+| 500 on every API call | Missing `DB` binding, missing secrets, or missing security tables. On Docker, check `APP_PASSWORD`/`TOKEN_ENC_KEY` and the `/data` volume |
+| OAuth redirect points to localhost on Docker | `PUBLIC_ORIGIN` is unset while the proxy terminates TLS; set it to the public URL |
 | Google OAuth 503 | `GOOGLE_MAIL_CLIENT_ID` / `GOOGLE_MAIL_CLIENT_SECRET` missing |
 | Microsoft OAuth 503 | `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` missing |
 | OAuth redirect error | Redirect URI does not exactly match the app configuration |
-| `CPU time limit exceeded` | Upgrade to Workers Paid |
+| `CPU time limit exceeded` | Upgrade to Workers Paid, or use the Docker target which has no Workers CPU limit |
 | Custom domain error 1014/522 | DNS record missing or origin not ready |
 
 ## Storage and relay
@@ -40,7 +42,7 @@ description: Common WhelkMail symptoms, likely causes and fixes for accounts, de
 | Symptom | Cause / fix |
 |---|---|
 | Drive 403 | OAuth scopes, testing-mode token expiry, or Drive not connected |
-| R2 option hidden | Missing `BUCKET` binding |
+| R2/S3 option hidden | Missing `BUCKET` binding (Cloudflare) or `S3_*` variables (Docker) |
 | Relay 503 | Relay provider not configured for the account and no deployment fallback |
 | Sending from a relay fails with `storage_failed` | No working sent-copy destination: connect Google Drive, create the `BUCKET` binding, or pick an IMAP mailbox for Sent/Drafts. The send is aborted before the relay is called |
 | `too_many_recipients` when sending | The relay caps recipients per message (to + cc + bcc combined); Cloudflare Email Service allows 50 |

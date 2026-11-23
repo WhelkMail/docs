@@ -1,6 +1,6 @@
 ---
 title: PWA and Web Push
-description: Installable app, notifications, the cron worker and the in-app release check.
+description: Installable app, notifications, the target scheduler and the in-app release check.
 ---
 
 # PWA and Web Push
@@ -13,7 +13,7 @@ Web Push works in three parts:
 
 1. The client asks for browser permission, registers the service worker and subscribes with the VAPID public key.
 2. `push_subscriptions` and `push_prefs` persist the subscription and per-account/folder preferences.
-3. The `worker/` cron Worker wakes up every minute and calls `POST /api/cron/notifications` with `CRON_SECRET`. That endpoint syncs the selected folders when the account's interval is due, detects new UIDs and sends encrypted Web Push messages with VAPID.
+3. A scheduler calls `POST /api/cron/notifications` with `CRON_SECRET` every minute: the Worker cron trigger on Workers, the `worker/` cron on Pages, or the built-in Node scheduler on Docker. That endpoint syncs the selected folders when the account's interval is due, detects new UIDs and sends encrypted Web Push messages with VAPID.
 
 Subscriptions are kept alive automatically. When the browser rotates or invalidates a subscription, `pushsubscriptionchange` resubscribes and registers the new endpoint, and the app re-registers its existing subscription on every start and after login. That covers browsers that never fire the event, cleared site data and expired sessions, so the server does not keep sending to an endpoint that answers 404/410 (the cron worker removes those as well). New-mail notifications are sent with `Urgency: high` (RFC 8030), which stops Chrome and FCM from deferring them while the device is in Doze.
 
@@ -25,17 +25,28 @@ Generate a VAPID key pair:
 npm run vapid
 ```
 
-Add the secrets to the Pages project:
+Add the secrets to the target:
 
 ```bash
+# Workers (default)
+npx wrangler secret put VAPID_PUBLIC_KEY
+npx wrangler secret put VAPID_PRIVATE_KEY
+npx wrangler secret put CRON_SECRET
+
+# Pages
 npx wrangler pages secret put VAPID_PUBLIC_KEY --project-name whelkmail
 npx wrangler pages secret put VAPID_PRIVATE_KEY --project-name whelkmail
 npx wrangler pages secret put CRON_SECRET --project-name whelkmail
+
+# Docker: VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY and CRON_SECRET in deploy/docker/.env
 ```
 
 `VAPID_SUBJECT` can be a plain variable such as `mailto:you@example.com`.
 
-Copy the cron worker template, set your Pages URL and deploy:
+On Workers, the cron is already part of `wrangler.jsonc`; nothing else to deploy.
+On Docker, the container runs its scheduler when `CRON_ENABLED=true`.
+
+On Pages, copy the cron worker template, set your Pages URL and deploy:
 
 ```bash
 cp worker/wrangler.toml.example worker/wrangler.toml
@@ -46,9 +57,9 @@ npm run cron:deploy
 
 `npm run cron:deploy` creates the file from the template when it is missing and stops with a clear error while `APP_URL` is still empty or a placeholder.
 
-The worker needs `APP_URL` and the same `CRON_SECRET` shared with the Pages app.
+The Pages worker needs `APP_URL` and the same `CRON_SECRET` shared with the app.
 
-## What the cron worker does
+## What the scheduler does
 
 Every minute, in the same run, it:
 
@@ -57,7 +68,7 @@ Every minute, in the same run, it:
 - runs the optional provider cleanup;
 - advances the per-account automatic background sync, once each account's interval has elapsed.
 
-The worker template uses `crons = ["* * * * *"]`. On Workers Free, use `["*/5 * * * *"]` instead: the 1 and 2 minute intervals are not usable on that plan.
+The Workers config and the Pages template use `crons = ["* * * * *"]`. On Workers Free, use `["*/5 * * * *"]` in `wrangler.jsonc` (or in `worker/wrangler.toml` on Pages) instead: the 1 and 2 minute intervals are not usable on that plan. Docker has no such CPU limit.
 
 Enable notifications from **Settings -> Push notifications**, background sync and the vacation responder in Settings, and forwarding/deletion in the account/filter sections.
 

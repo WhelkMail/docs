@@ -1,11 +1,11 @@
 ---
 title: Data model
-description: The D1 tables WhelkMail uses, what they store and how synchronization, labels and archives work.
+description: The D1/SQLite tables WhelkMail uses, what they store and how synchronization, labels and archives work.
 ---
 
 # Data model
 
-WhelkMail stores accounts, settings, mirrored IMAP metadata, relay messages, labels, filters and notification state in Cloudflare D1.
+WhelkMail stores accounts, settings, mirrored IMAP metadata, relay messages, labels, filters and notification state in Cloudflare D1 (Workers/Pages) or SQLite (Docker). The schema is identical: `db/schema.sql` and `db/migrations` are shared, and the Docker entrypoint applies them to `node:sqlite` on startup.
 
 ## `accounts`
 
@@ -35,7 +35,7 @@ Important fields:
 
 ## `messages`
 
-Used for relay accounts: sent copies and drafts. IMAP messages are read from the provider and mirrored in `imap_messages`; the optional sync keeps metadata current, while recent bodies are held in the short-lived D1 cache. Full bodies are copied to R2/Drive only when long-term archiving is enabled.
+Used for relay accounts: sent copies and drafts. IMAP messages are read from the provider and mirrored in `imap_messages`; the optional sync keeps metadata current, while recent bodies are held in the short-lived D1/SQLite cache. Full bodies are copied to R2/S3/Drive only when long-term archiving is enabled.
 
 When a relay account stores copies in an IMAP mailbox, `storage_key` holds a pointer (`imap:<accountId>:<encodedFolder>:<uid>`) instead of an object key: the body and attachments are read from that mailbox, and the copy is removed there when the message or draft is deleted. Account deletion never touches those messages.
 
@@ -61,7 +61,7 @@ A relay account stores no incoming mail. Its scoped filter matches messages whos
 
 ## `contacts`
 
-Shared address book stored in D1, not R2/Drive: `id`, `name` (display name), `email`, `note`, `source`, `first_name`, `last_name`, `company`, `job_title`, `phone`, `address`, `website`, `birthday`, `emails_json`, `phones_json`, `created_at`. `source` is `manual` or `auto` (Gmail-style Other contacts). `emails_json` and `phones_json` hold additional addresses/numbers. A unique index on `lower(email)` prevents duplicates; creating a contact with an existing email updates it instead. Contacts are not account-scoped.
+Shared address book stored in the database, not R2/S3/Drive: `id`, `name` (display name), `email`, `note`, `source`, `first_name`, `last_name`, `company`, `job_title`, `phone`, `address`, `website`, `birthday`, `emails_json`, `phones_json`, `created_at`. `source` is `manual` or `auto` (Gmail-style Other contacts). `emails_json` and `phones_json` hold additional addresses/numbers. A unique index on `lower(email)` prevents duplicates; creating a contact with an existing email updates it instead. Contacts are not account-scoped.
 
 The UI supports search, create/edit/delete, CSV import/export, vCard import (3.0/4.0 auto-detected) and vCard export (3.0 by default, 4.0 optional). `POST /api/contacts/import` upserts up to 1.000 cards per request and the client chunks larger files.
 
@@ -101,7 +101,7 @@ Each pruning run is recorded in `app_settings.retention_stats` (`lastRunAt`, `la
 
 `accounts.archive_imap_bodies` is optional; `accounts.imap_archive_driver` selects `r2` or `drive` for **new** archives. Each archived row records `imap_messages.archive_driver` next to `archive_key`, and reading or pruning an archived body asks that backend first and then the other configured one, so switching the archive between R2 and Drive keeps earlier bodies readable. Rows archived before the column existed keep `archive_driver = NULL` and fall back to both backends.
 
-R2 requires a bound `BUCKET`; Drive requires the account's Google Drive OAuth connection. The sync stores the raw EML under `imap/<account>/<folder>/<uidvalidity>/<folder>-<uid>.eml` and records `archived`/`archive_key`/`archive_driver` in `imap_messages`. With Drive, `archive_key` is the Drive file id. Reading and attachment/download endpoints use the D1 body cache first, then the archive, and fall back to IMAP otherwise. When disabled, bodies and attachments stay on the provider.
+R2/S3 requires a bound `BUCKET` (R2 on Cloudflare, `S3_*` on Docker); Drive requires the account's Google Drive OAuth connection. The sync stores the raw EML under `imap/<account>/<folder>/<uidvalidity>/<folder>-<uid>.eml` and records `archived`/`archive_key`/`archive_driver` in `imap_messages`. With Drive, `archive_key` is the Drive file id. Reading and attachment/download endpoints use the D1 body cache first, then the archive, and fall back to IMAP otherwise. When disabled, bodies and attachments stay on the provider.
 
 ## `push_subscriptions` and `push_prefs`
 

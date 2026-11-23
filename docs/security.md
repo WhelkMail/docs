@@ -40,19 +40,20 @@ CSP, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Perm
 ## Data protection
 
 - By default, messages, sent copies, drafts and attachments stay on the mail provider.
-- The D1 body cache is short-lived and bounded (512 KB per body, 3 days, 64 MB total).
-- Long-term archiving on R2 or Google Drive is strictly opt-in per account.
+- The D1/SQLite body cache is short-lived and bounded (512 KB per body, 3 days, 64 MB total).
+- Long-term archiving on R2/S3 or Google Drive is strictly opt-in per account.
 - Deleting an account never deletes mail from the provider.
 
 ## Secrets hygiene
 
 - `.dev.vars`, `.env` and `.wrangler` are gitignored.
-- Production secrets belong in the Pages project settings.
-- The public repository must never contain `wrangler.toml`, `worker/wrangler.toml`, `.dev.vars`, `.env*` or any secret.
+- Production secrets belong in the target's secret store: Workers/Pages project settings, or `deploy/docker/.env` on Docker.
+- The public repository must never contain `wrangler.toml`, `worker/wrangler.toml`, `.dev.vars`, `.env*` or any secret. The tracked `wrangler.jsonc` keeps a placeholder D1 id; do not commit your real id.
+- On Docker, protect the data volume (`/data`) and the `.env` file like any other credential store.
 
 ## No multi-tenancy
 
-There is no per-user isolation. This is intended for personal or small trusted deployments. Put Cloudflare Access in front for stronger authentication. Login and 2FA rate limiting are present but per-IP only, and are not a substitute for Cloudflare Access or a WAF.
+There is no per-user isolation. This is intended for personal or small trusted deployments. Put Cloudflare Access (or the authentication offered by your reverse proxy on Docker) in front for stronger authentication. Login and 2FA rate limiting are present but per-IP only, and are not a substitute for Cloudflare Access or a WAF.
 
 ## Account authentication methods
 
@@ -67,7 +68,7 @@ There is no per-user isolation. This is intended for personal or small trusted d
 
 ## Recovering from lost 2FA
 
-If you lose both the authenticator and the recovery codes, disable 2FA from a D1 console:
+If you lose both the authenticator and the recovery codes, disable 2FA from a D1 console (on Docker, run the same SQL against `/data/whelkmail.sqlite` with the `sqlite3` CLI or a Node script):
 
 ```sql
 DELETE FROM app_settings WHERE key IN ('totp_enabled', 'totp_secret_enc', 'totp_recovery_json');

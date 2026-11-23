@@ -5,16 +5,18 @@ description: Bindings, secrets, environment variables and optional integrations 
 
 # Configuration
 
-IMAP/SMTP accounts need no central mail configuration: each account stores its own servers and credentials. The values below configure the deployment itself.
+IMAP/SMTP accounts need no central mail configuration: each account stores its own servers and credentials. The values below configure the deployment itself. Workers and Pages read Cloudflare bindings; Docker reads environment variables and creates the SQLite database and `BUCKET` adapter at startup.
 
 ## Bindings
 
-| Binding | Required | Purpose |
-|---|---|---|
-| `DB` (D1) | Yes | Accounts, settings, IMAP sync metadata, relay archive/drafts metadata |
-| `BUCKET` (R2) | No | Sent/draft archive for relay accounts; optional IMAP body/attachment archive |
+| Binding | Targets | Required | Purpose |
+|---|---|---|---|
+| `DB` (D1) | Workers, Pages | Yes | Accounts, settings, IMAP sync metadata, relay archive/drafts metadata |
+| SQLite file | Docker | Automatic | Same schema, stored in the `/data` volume |
+| `BUCKET` (R2) | Workers, Pages | No | Sent/draft archive; optional IMAP body/attachment archive |
+| `S3_*` | Docker | No | Same archive on any S3-compatible bucket; exposed to the code as `BUCKET` |
 
-Use exactly these names: the code reads `env.DB` and `env.BUCKET`. When `BUCKET` is absent, R2 is hidden in the UI.
+Use exactly these names on Cloudflare: the code reads `env.DB` and `env.BUCKET`. When storage is absent, the archive option is hidden in the UI.
 
 ## Required secrets
 
@@ -41,7 +43,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 | `RELAY_PROVIDER` / `RELAY_API_KEY` / `RELAY_API_SECRET` | Deployment-wide relay fallback |
 | `MAILGUN_DOMAIN` / `MAILGUN_REGION` | Mailgun relay fallback |
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` | Web Push notifications |
-| `CRON_SECRET` | Shared secret between Pages and the cron worker |
+| `CRON_SECRET` | Shared secret between the app and its scheduler (Worker trigger, Pages cron worker or Docker scheduler) |
 | `UPDATE_CHECK` | Set to `off` to stop the outbound release check |
 | `GITHUB_TOKEN` | Optional token, only used to raise the release-check rate limit |
 
@@ -65,9 +67,16 @@ Relay credentials can also be entered per account in the UI and are encrypted at
 | `MAILGUN_DOMAIN` / `MAILGUN_REGION` | No | Mailgun fallback |
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | No | Web Push VAPID keys |
 | `VAPID_SUBJECT` | No | VAPID contact (`mailto:`) |
-| `CRON_SECRET` | No | Shared secret for the cron worker |
-| `DB` (D1 binding) | Yes | Metadata |
-| `BUCKET` (R2 binding) | No | R2 archive |
+| `CRON_SECRET` | No | Shared secret for the scheduler |
+| `DB` (D1 binding) | Yes on Cloudflare | Metadata |
+| `BUCKET` (R2 binding) | No | R2 archive on Cloudflare |
+| `S3_ENDPOINT` / `S3_BUCKET` / `S3_REGION` | No | S3-compatible archive on Docker |
+| `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | No | S3 credentials on Docker |
+| `S3_FORCE_PATH_STYLE` | No | Path-style URLs (default `true`, suited to MinIO) |
+| `DB_PATH` | No | SQLite file, default `/data/whelkmail.sqlite` in Docker |
+| `PUBLIC_ORIGIN` | No | Public URL for OAuth callbacks and secure cookies on Docker |
+| `PORT` / `HOST` / `STATIC_DIR` | No | Docker listener and build directory |
+| `CRON_ENABLED` | No | `false` disables the Docker scheduler |
 | `UPDATE_CHECK` | No | `off` disables the release check |
 | `GITHUB_TOKEN` | No | Raises the release-check rate limit |
 
@@ -85,7 +94,7 @@ Some preferences are stored in the `app_settings` table instead of environment v
 
 ## Local environment file
 
-For local development, `.dev.vars` (gitignored) holds the same values:
+For local Cloudflare development, `.dev.vars` (gitignored) holds the same values:
 
 ```env
 APP_PASSWORD=change-me
@@ -100,6 +109,12 @@ MICROSOFT_TENANT=common
 RELAY_PROVIDER=smtp2go
 RELAY_API_KEY=
 ```
+
+For Docker, copy `deploy/docker/.env.example` to `deploy/docker/.env`. The
+minimum is `APP_PASSWORD`, `TOKEN_ENC_KEY` and `PUBLIC_ORIGIN`; add `S3_*` for
+the archive, OAuth/relay/VAPID values when needed, and set `CRON_ENABLED=false`
+if the scheduler should not run. `PUBLIC_ORIGIN` must match the public URL when
+a reverse proxy terminates TLS.
 
 ## OAuth
 

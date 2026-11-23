@@ -17,13 +17,11 @@ WhelkMail is self-hosted: nobody can push an update into your deployment. This g
 
 1. **Get the code.** Update your copy of the repository to the release tag:
    - GitHub fork: open your fork and use **Sync fork → Update branch**, then check that your fork's `main` matches the upstream tag.
-   - Command line: `git fetch --tags && git checkout v1.3.0`.
-2. **Deploy.** Either let Cloudflare Pages redeploy (it builds from the branch you pushed) or run it yourself:
-
-   ```bash
-   npm ci
-   npm run deploy
-   ```
+   - Command line: `git fetch --tags && git checkout 1.4.0`.
+2. **Deploy.** Choose the target you use:
+   - **Workers:** `npm ci && npm run deploy`
+   - **Pages:** push to the connected branch, or `npm ci && npm run deploy:pages`
+   - **Docker:** `git pull && docker compose up -d --build`
 
 3. **Migrate, if the release notes ask for it.**
 
@@ -36,6 +34,8 @@ WhelkMail is self-hosted: nobody can push an update into your deployment. This g
 4. **Reload the app.** A tab left open on the old bundle shows a "reload" notice; after the reload, Settings → System reports the new version.
 
 ## Migrations in recent releases
+
+**1.4.0 does not add a database migration.** It adds the Workers and Docker deployment targets and shared runtime adapters. Existing Pages installations keep the same D1 database, R2 bucket and secrets; remove any legacy local `wrangler.toml` because Pages now reads the tracked `wrangler.jsonc`.
 
 Release 1.3.0 adds `031_recheck_aliases.sql` through `035_contact_vcard_fields.sql`:
 

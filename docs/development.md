@@ -18,13 +18,17 @@ Both repositories share **one history**: `public/main` is an ancestor of the dev
 
 ## Local setup
 
-Requirements: Node.js 22+ and npm.
+Requirements: Node.js 24+ and npm (the Docker image uses Node 24).
 
 ```bash
 npm install
-cp wrangler.toml.example wrangler.toml   # gitignored
-npm run db:init:local                     # fresh database: schema + migration baseline
+npm run db:init:local   # fresh local database: schema + migration baseline
 ```
+
+The tracked `wrangler.jsonc` carries the shared Workers/Pages configuration with
+a placeholder D1 id. Remove any legacy local `wrangler.toml`: Pages does not
+support custom configuration paths and the public repository must keep the
+placeholder.
 
 Create `.dev.vars` (gitignored) with at least:
 
@@ -39,14 +43,25 @@ Generate the key with:
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-Run the app in two terminals:
+Run the app:
 
 ```bash
-npm run dev       # Vite on http://localhost:5173
-npm run dev:api   # Pages Functions on http://localhost:8788
+npm run dev            # Vite on http://localhost:5173
+npm run dev:workers    # Worker + local D1 on http://localhost:8787
+# or
+npm run dev:pages      # Pages Functions on http://localhost:8788
 ```
 
-Open `http://localhost:8788` (the Functions proxy the Vite dev server).
+Node/Docker locally:
+
+```bash
+npm run build:all
+APP_PASSWORD=... TOKEN_ENC_KEY=... DB_PATH=./data/dev.sqlite \
+  PUBLIC_ORIGIN=http://localhost:8787 node dist-server/server.mjs
+```
+
+`npm run build:node` bundles `server/entries/node.ts` with esbuild; the runtime
+uses the built-in `node:sqlite` module and needs no `node_modules`.
 
 ### Working from the Acode terminal on Android
 
@@ -92,8 +107,8 @@ The version lives in `package.json` (mirrored in `package-lock.json`) and `APP_V
 3. Create the tag and the release on GitHub:
 
    ```bash
-   git tag v1.3.0
-   git push public v1.3.0
+   git tag 1.4.0
+   git push public 1.4.0
    ```
 
    Then publish the release from the tag on [github.com/WhelkMail/WhelkMail/releases](https://github.com/WhelkMail/WhelkMail/releases). Mark the tag as a prerelease when it is a beta: `/releases/latest` skips prereleases, so installations are not told about them.
@@ -117,7 +132,7 @@ sh scripts/publish-public.sh                  # publish main
 SOURCE=feature-x sh scripts/publish-public.sh  # publish another branch
 ```
 
-The script refuses to run if a personal config file is tracked in `SOURCE`: `wrangler.toml`, `worker/wrangler.toml`, `.dev.vars` and its variants, `.env` and `.env.*` with any number of suffixes. The `*.example` templates are allowed and expected.
+The script refuses to run if a personal config file is tracked in `SOURCE`: `wrangler.toml`, `worker/wrangler.toml`, `.dev.vars` and its variants, `.env` and `.env.*` with any number of suffixes. The `*.example` templates are allowed and expected. `wrangler.jsonc` is tracked on purpose with a placeholder D1 id so the Deploy to Cloudflare button and forks stay generic.
 
 It then pushes `SOURCE` to `public/main` as a **fast-forward**. If `public/main` has commits that are missing locally the script stops and asks for a merge first:
 
@@ -130,7 +145,8 @@ Before publishing, make sure the public tree is installable:
 
 ```bash
 git ls-files | grep -E 'wrangler\.toml$|\.dev\.vars' && echo "unexpected config"
-npm ci && npm run typecheck && npm run test && npm run build
+grep -q '"database_id": "00000000-0000-0000-0000-000000000000"' wrangler.jsonc
+npm ci && npm run typecheck && npm run test && npm run build && npm run build:node
 ```
 
 The public repository must not contain:
@@ -147,10 +163,13 @@ The public repository must not contain:
 | Path | Contents |
 | --- | --- |
 | `src/` | React app (`App.tsx` holds the state machine, `components/` the UI) |
-| `functions/api/` | Pages Functions endpoints |
+| `functions/api/` | API endpoint handlers (Pages native routing; Workers/Node use `server/routes.ts`) |
 | `functions/_lib/` | IMAP/SMTP, D1 access, sync, cache, filters, crypto |
+| `server/` | runtime-agnostic dispatcher, route table and Workers/Node/SQLite/S3 adapters |
+| `server/entries/` | Workers and Node entrypoints (Pages needs none) |
+| `deploy/docker/` | Dockerfile, compose file and environment example |
 | `shared/` | types, schemas, presets and paging helpers shared by both sides |
-| `worker/` | notification cron worker (`index.ts` + example config) |
+| `worker/` | Pages cron worker (`index.ts` + example config) |
 | `db/` | schema and migrations |
 | `scripts/` | helper scripts (VAPID keys, migrations, worker config, publishing) |
 | `tests/` | Vitest suites |

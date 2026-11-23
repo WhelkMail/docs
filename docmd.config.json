@@ -33,7 +33,7 @@
       "style": "complete",
       "copyright": "Copyright © 2026 WhelkMail · MIT License",
       "branding": true,
-      "description": "Self-hosted, Cloudflare-native webmail for the IMAP and SMTP accounts you already own.",
+      "description": "Self-hosted webmail for IMAP/SMTP accounts, on Cloudflare Workers, Pages or Docker.",
       "columns": [
         {
           "title": "Documentation",
@@ -82,7 +82,7 @@
   "pageNavigation": true,
   "plugins": {
     "seo": {
-      "defaultDescription": "WhelkMail — a self-hosted, Cloudflare-native webmail client for the IMAP and SMTP accounts you already own."
+      "defaultDescription": "WhelkMail — a self-hosted webmail client for IMAP/SMTP accounts, deployable on Cloudflare Workers, Pages or Docker."
     },
     "sitemap": {
       "defaultChangefreq": "weekly",
