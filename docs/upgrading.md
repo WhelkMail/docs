@@ -17,7 +17,7 @@ WhelkMail is self-hosted: nobody can push an update into your deployment. This g
 
 1. **Get the code.** Update your copy of the repository to the release tag:
    - GitHub fork: open your fork and use **Sync fork → Update branch**, then check that your fork's `main` matches the upstream tag.
-   - Command line: `git fetch --tags && git checkout 1.4.0`.
+   - Command line: `git fetch --tags && git checkout 1.5.0`.
 2. **Deploy.** Choose the target you use:
    - **Workers:** `npm ci && npm run deploy`
    - **Pages:** push to the connected branch, or `npm ci && npm run deploy:pages`
@@ -34,6 +34,8 @@ WhelkMail is self-hosted: nobody can push an update into your deployment. This g
 4. **Reload the app.** A tab left open on the old bundle shows a "reload" notice; after the reload, Settings → System reports the new version.
 
 ## Migrations in recent releases
+
+**1.5.0 does not add a database migration.** It adds configuration export and import: **Settings → System → Configuration export and import** writes a passphrase-encrypted file with accounts, filters, labels, contacts and settings, and restores it on another deployment by re-encrypting the account secrets with that deployment's `TOKEN_ENC_KEY`. The import replaces the configuration and clears the local mail mirror; the object archive and two-factor settings are not included. See [Configuration](configuration#configuration-export-and-import).
 
 **1.4.0 does not add a database migration.** It adds the Workers and Docker deployment targets and shared runtime adapters. Existing Pages installations keep the same D1 database, R2 bucket and secrets; remove any legacy local `wrangler.toml` because Pages now reads the tracked `wrangler.jsonc`.
 

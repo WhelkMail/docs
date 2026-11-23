@@ -92,6 +92,17 @@ Some preferences are stored in the `app_settings` table instead of environment v
 - TOTP/2FA material.
 - `update_check`, `update_notice_dismissed` — release-check cache and dismissal.
 
+## Configuration export and import
+
+**Settings → System → Configuration export and import** moves the configuration to another WhelkMail deployment. One JSON file carries accounts, labels, filters, contacts, notification preferences and the settings listed above as deployment-wide settings. Mailboxes, cached bodies and the R2/S3/Drive archive are not part of the file.
+
+- **Export** (`POST /api/config/export`) decrypts the stored account secrets with the current `TOKEN_ENC_KEY`, then encrypts the whole bundle with a passphrase you choose (PBKDF2-SHA256 with 100,000 iterations, then AES-256-GCM). The file is safe at rest and the passphrase cannot be recovered.
+- **Import** (`POST /api/config/import`) decrypts the file with the passphrase, re-encrypts every account secret with the destination `TOKEN_ENC_KEY` and replaces the configuration tables. Two installations may therefore use different keys.
+
+An import replaces accounts, filters, labels, contacts and the settings it manages, and clears the local mail mirror (mail stays on the providers and is rebuilt by the next sync). Sessions, two-factor settings and the object archive are left untouched. Push subscriptions are device-specific and are not portable: subscribe again on the new device. If an account secret cannot be decrypted with the source key, the export stops and names the account, so re-enter its password first.
+
+The 100,000-iteration ceiling is the Cloudflare Workers limit; the same value is used on every target so a file exported by one deployment can be imported by another. The derivation runs inside the Worker, so on a Workers Free plan a large export may exceed the free CPU budget; use Docker or Workers Paid when needed.
+
 ## Local environment file
 
 For local Cloudflare development, `.dev.vars` (gitignored) holds the same values:

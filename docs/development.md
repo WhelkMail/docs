@@ -107,8 +107,8 @@ The version lives in `package.json` (mirrored in `package-lock.json`) and `APP_V
 3. Create the tag and the release on GitHub:
 
    ```bash
-   git tag 1.4.0
-   git push public 1.4.0
+   git tag 1.5.0
+   git push public 1.5.0
    ```
 
    Then publish the release from the tag on [github.com/WhelkMail/WhelkMail/releases](https://github.com/WhelkMail/WhelkMail/releases). Mark the tag as a prerelease when it is a beta: `/releases/latest` skips prereleases, so installations are not told about them.

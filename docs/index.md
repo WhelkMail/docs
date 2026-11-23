@@ -67,6 +67,7 @@ Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a fam
 - Incremental, resumable IMAP metadata sync into D1/SQLite.
 - Optional background sync through the target scheduler (Worker cron, Pages cron worker or the Docker scheduler), with a per-account interval (1 to 30 minutes).
 - Anti-loop forwarding headers, per-filter forward logs and deletion logs.
+- Configuration export and import: move accounts, filters, labels, contacts and settings between deployments as a passphrase-encrypted file, with secrets re-encrypted for the target `TOKEN_ENC_KEY`.
 
 ## Explore the documentation
 
