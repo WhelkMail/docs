@@ -8,10 +8,10 @@ description: Requirements, local setup and connecting your first mailbox to Whel
 ## Fast paths
 
 - **Workers (default):** use the [Deploy to Cloudflare button](https://deploy.workers.cloudflare.com/?url=https://github.com/WhelkMail/WhelkMail). Cloudflare clones the repository into your GitHub/GitLab account, provisions D1/R2, configures Workers Builds and deploys. Enter the secrets during setup or in the dashboard.
-- **Pages installer (beta):** the [WhelkMail Installer](https://github.com/WhelkMail/installer) creates a Pages deployment in **your** Cloudflare account. Browser path: copy the [installer template](https://github.com/WhelkMail/installer), add `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `APP_PASSWORD` and `TOKEN_ENC_KEY` as repository secrets, then run **Install WhelkMail**. Terminal path: with Node.js 24+ run `npx github:WhelkMail/installer`.
+- **Cloudflare Pages:** create the project in the [Pages dashboard](https://dash.cloudflare.com/?to=/:account/pages), connect the repository and add the `DB`/`BUCKET` bindings and secrets there. The full manual walkthrough is in [Deployment](deployment#2-cloudflare-pages).
 - **Docker:** `cd deploy/docker && cp .env.example .env && docker compose up -d --build`. See [Deployment](deployment#3-docker--any-vps).
 
-The installer stores secrets, creates the Pages project and the D1 database, deploys the app and verifies the health endpoint. It is still **beta**, so check the run log; the manual path in [Deployment](deployment) is the fully documented fallback. Re-running it is safe: resources and the database are reused and migrations are idempotent.
+Each deployment target stores the same two required secrets (`APP_PASSWORD`, `TOKEN_ENC_KEY`) and applies the schema before first use: `npm run db:init:workers:remote` on Workers, `npm run db:init:remote` on Pages, automatic on Docker.
 
 To look around without deploying anything, open the [live demo](https://demo.whelkmail.eu). It is a static preview of the real UI where every API call is mocked in the browser: no real mailbox, no network access and no data leaves the tab.
 

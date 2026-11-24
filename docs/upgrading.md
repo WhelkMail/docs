@@ -47,7 +47,7 @@ Release 1.3.0 adds `031_recheck_aliases.sql` through `035_contact_vcard_fields.s
 - `034` adds `accounts.signature_html` and `accounts.auto_reply_body_html` for rich-text signatures and replies.
 - `035` adds the structured contact fields (first/last name, company, job title, phone, address, website, birthday, additional emails/phones).
 
-Run `npm run db:migrate:remote` before deploying 1.3.0. The installer applies the same migrations automatically. Existing data is preserved, and signatures/auto-reply bodies saved before 1.3.0 keep working as plain text.
+Run `npm run db:migrate:remote` before deploying 1.3.0. Existing data is preserved, and signatures/auto-reply bodies saved before 1.3.0 keep working as plain text.
 
 Release 1.2.0 added `030_account_label_filters.sql`: it adds `filters.auto_label`, creates the unique index for each account's automatic filter and converts existing `accounts.incoming_label_id` settings into editable filters.
 

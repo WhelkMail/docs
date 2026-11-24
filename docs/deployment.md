@@ -10,7 +10,7 @@ WhelkMail is one codebase with three deployment targets:
 | Target | Best for | Database | Object storage | Mail sockets |
 |---|---|---|---|---|
 | **Cloudflare Workers** (default) | New installations | D1 | R2 | `cloudflare:sockets` |
-| **Cloudflare Pages** | Existing Pages installations | D1 | R2 | `cloudflare:sockets` |
+| **Cloudflare Pages** | Projects deployed from the Pages dashboard | D1 | R2 | `cloudflare:sockets` |
 | **Docker** | Any VPS, no Cloudflare dependency | SQLite (`node:sqlite`) | Any S3-compatible bucket | `node:net` / `node:tls` |
 
 The frontend build and the API handlers are identical; only the entrypoint and
@@ -33,13 +33,11 @@ the optional OAuth, relay and VAPID values described in
   through `WRANGLER_CI_OVERRIDE_NAME`.
   After the first deploy, clone the new repository and run
   `npm install && npm run db:init:workers:remote` once to create the schema.
-- **Installer (Pages, beta):** the
-  [WhelkMail Installer](https://github.com/WhelkMail/installer) creates the D1
-  database and Pages project, stores the secrets, applies the schema and
-  verifies `GET /api/health`. It targets Pages only; use the button above for
-  Workers.
+- **Cloudflare Pages:** create the project in the Pages dashboard and add the
+  bindings and secrets there; see [Cloudflare Pages](#2-cloudflare-pages)
+  below.
 - **Docker:** `deploy/docker/compose.yml` starts the app with SQLite in a
-  volume. See [Docker](#docker) below.
+  volume. See [Docker](#3-docker--any-vps) below.
 
 ---
 
@@ -131,10 +129,12 @@ Add the hostname and update OAuth redirect URIs if you use OAuth.
 
 ---
 
-## 2. Cloudflare Pages (existing installations)
+## 2. Cloudflare Pages
 
-Existing Pages projects need **no data migration**: keep the same D1 database,
-R2 bucket, secrets and project. Deploy the new release and Pages keeps using
+Pages runs the same code and the same D1/R2 resources as the Workers target and
+is set up entirely from the Cloudflare dashboard. Existing Pages projects need
+**no data migration**: keep the same D1 database, R2 bucket, secrets and
+project. Deploy the new release and Pages keeps using
 native file routing under `functions/api`; `_middleware.ts` registers the
 Cloudflare socket implementation for the mail clients.
 

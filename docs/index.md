@@ -7,7 +7,7 @@ description: WhelkMail is a self-hosted webmail client for the IMAP and SMTP acc
 
 **Your mailboxes. Your domain. One calm inbox.**
 
-WhelkMail is a self-hosted webmail client for the IMAP and SMTP accounts you already own. It runs on **Cloudflare Workers** by default, on **Cloudflare Pages** for existing installations, or in a **single Docker container** on any VPS, so there is no mail server to operate and no infrastructure to babysit.
+WhelkMail is a self-hosted webmail client for the IMAP and SMTP accounts you already own. It runs on **Cloudflare Workers** by default, on **Cloudflare Pages** as an alternative target, or in a **single Docker container** on any VPS, so there is no mail server to operate and no infrastructure to babysit.
 
 Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a familiar, Gmail-style interface on top of the mailboxes you already use. Messages, sent copies, drafts and attachments stay on your provider; only a short-lived D1 cache and the strictly opt-in long-term archive copy them.
 
@@ -21,7 +21,7 @@ Connect Gmail, Outlook, iCloud, Fastmail, Yahoo or a custom domain and get a fam
 
 - **Live demo:** [demo.whelkmail.eu](https://demo.whelkmail.eu) is a static, backend-free preview of WhelkMail. It runs the real UI but replaces every API call with an in-memory mock, so there is no D1, no IMAP/SMTP and no network access. Every account, message and attachment is fake, and actions only change the current browser tab.
 - **Deploy to Cloudflare (Workers, default):** the [Deploy to Cloudflare button](https://deploy.workers.cloudflare.com/?url=https://github.com/WhelkMail/WhelkMail) clones the repository into your GitHub/GitLab account, provisions D1/R2 and deploys the Worker.
-- **Installer (Pages, beta):** the [WhelkMail Installer](https://github.com/WhelkMail/installer) provisions and deploys a **Pages** instance inside **your** Cloudflare account. It creates the Pages project and the D1 database, stores `APP_PASSWORD` and `TOKEN_ENC_KEY`, deploys the app and checks `GET /api/health`. You can run it from GitHub Actions in the browser or from the terminal with `npx github:WhelkMail/installer`. The installer is a convenience on top of the manual deployment described in [Deployment](deployment).
+- **Cloudflare Pages:** set up the project from the [Pages dashboard](https://dash.cloudflare.com/?to=/:account/pages), connect the repository and add the `DB`/`BUCKET` bindings and the secrets there. The step-by-step walkthrough is in [Deployment](deployment#2-cloudflare-pages).
 
 ## Why WhelkMail
 

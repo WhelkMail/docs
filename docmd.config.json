@@ -60,7 +60,6 @@
           "links": [
             { "text": "Website", "url": "https://whelkmail.eu", "external": true },
             { "text": "Live demo", "url": "https://demo.whelkmail.eu", "external": true },
-            { "text": "Installer (beta)", "url": "https://github.com/WhelkMail/installer", "external": true },
             { "text": "GitHub", "url": "https://github.com/WhelkMail/WhelkMail", "external": true },
             { "text": "Releases", "url": "https://github.com/WhelkMail/WhelkMail/releases", "external": true },
             { "text": "License", "url": "https://github.com/WhelkMail/WhelkMail/blob/main/LICENSE", "external": true }
